@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPC Team Intranet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .search-container {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            fill: #3498db;
+        }
+
+        .link-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .link-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            border-left-color: #3498db;
+        }
+
+        .link-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            fill: #3498db;
+        }
+
+        .link-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .link-description {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .admin-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 10px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .admin-bar.active {
+            transform: translateY(0);
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .admin-toggle.active {
+            background: #27ae60;
+        }
+
+        .admin-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .admin-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .admin-btn.danger {
+            background: #e74c3c;
+        }
+
+        .admin-btn.danger:hover {
+            background: #c0392b;
+        }
+
+        .admin-btn.success {
+            background: #27ae60;
+        }
+
+        .admin-btn.success:hover {
+            background: #229954;
+        }
+
+        .quick-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .fab {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .fab.secondary {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            font-size: 20px;
+        }
+
+        .edit-mode .section {
+            position: relative;
+            border: 2px dashed transparent;
+            transition: all 0.3s ease;
+        }
+
+        .edit-mode .section:hover {
+            border-color: #3498db;
+        }
+
+        .section-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: none;
+            gap: 8px;
+        }
+
+        .edit-mode .section-controls {
+            display: flex;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .control-btn.edit {
+            color: #3498db;
+        }
+
+        .control-btn.delete {
+            color: #e74c3c;
+        }
+
+        .link-controls {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: none;
+            gap: 4px;
+        }
+
+        .edit-mode .link-item {
+            position: relative;
+            padding-right: 70px;
+        }
+
+        .edit-mode .link-item:hover .link-controls {
+            display: flex;
+        }
+
+        .link-control-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 3px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .link-control-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .body-offset {
+            padding-top: 60px;
+        }
+
+        .add-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-toggle" onclick="toggleAdmin()">⚙️</div>
+    
+    <div class="admin-bar" id="adminBar">
+        <div>
+            <strong>🔧 Beheer Modus</strong>
+            <span style="margin-left: 20px; font-size: 14px;">Klik op secties en links om ze te bewerken</span>
+        </div>
+        <div class="admin-controls">
+            <button class="admin-btn" onclick="exportData()">📤 Export Data</button>
+            <button class="admin-btn" onclick="importData()">📥 Import Data</button>
+            <button class="admin-btn danger" onclick="clearAllData()">🗑️ Alles wissen</button>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <header>
+        <header>
+            <h1>IPC Team Intranet</h1>
+            <p class="subtitle">Centrale hub voor tools, links en informatie</p>
+            
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Zoek naar tools, links of informatie..." id="searchInput">
+            </div>
+        </header>
+
+        <div class="grid" id="sectionsGrid">
+            <div class="section" data-category="tools">
+                <div class="section-controls">
+                    <button class="control-btn edit" onclick="editSection(this)" title="Bewerk sectie">✏️</button>
+                    <button class="control-btn delete" onclick="deleteSection(this)" title="Verwijder sectie">🗑️</button>
+                </div>
+                <h2>
+                    <svg class="section-icon" viewBox="0 0 24 24">
+                        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+                    </svg>
+                    Development Tools
+                </h2>
+                <div class="link-grid">
+                    <a href="#" class="link-item" data-link-id="1">
+                        <div class="link-controls">
+                            <button class="link-control-btn edit" onclick="editLink(this)" title="Bewerk link">✏️</button>
+                            <button class="link-control-btn delete" onclick="deleteLink(this)" title="Verwijder link">🗑️</button>
+                        </div>
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Jira</div>
+                            <div class="link-description">Issue tracking en projectmanagement</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item" data-link-id="2">
+                        <div class="link-controls">
+                            <button class="link-control-btn edit" onclick="editLink(this)" title="Bewerk link">✏️</button>
+                            <button class="link-control-btn delete" onclick="deleteLink(this)" title="Verwijder link">🗑️</button>
+                        </div>
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">GitLab</div>
+                            <div class="link-description">Code repository en CI/CD</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item" data-link-id="3">
+                        <div class="link-controls">
+                            <button class="link-control-btn edit" onclick="editLink(this)" title="Bewerk link">✏️</button>
+                            <button class="link-control-btn delete" onclick="deleteLink(this)" title="Verwijder link">🗑️</button>
+                        </div>
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">SonarQube</div>
+                            <div class="link-description">Code quality en security analysis</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="section" data-category="monitoring">
+                <h2>
+                    <svg class="section-icon" viewBox="0 0 24 24">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    </svg>
+                    Monitoring & Analytics
+                </h2>
+                <div class="link-grid">
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Grafana</div>
+                            <div class="link-description">Dashboards en visualisaties</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Prometheus</div>
+                            <div class="link-description">Metrics en alerting</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">ELK Stack</div>
+                            <div class="link-description">Logging en log analysis</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="section" data-category="communication">
+                <h2>
+                    <svg class="section-icon" viewBox="0 0 24 24">
+                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                    </svg>
+                    Communicatie
+                </h2>
+                <div class="link-grid">
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Slack</div>
+                            <div class="link-description">Team communicatie</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Teams</div>
+                            <div class="link-description">Video calls en samenwerking</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Confluence</div>
+                            <div class="link-description">Wiki en documentatie</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="section" data-category="documentation">
+                <h2>
+                    <svg class="section-icon" viewBox="0 0 24 24">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                    Documentatie
+                </h2>
+                <div class="link-grid">
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">API Documentatie</div>
+                            <div class="link-description">Swagger/OpenAPI specs</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Architectuur Docs</div>
+                            <div class="link-description">System design en architectuur</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Runbooks</div>
+                            <div class="link-description">Operationele procedures</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="section" data-category="infrastructure">
+                <h2>
+                    <svg class="section-icon" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Infrastructure
+                </h2>
+                <div class="link-grid">
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Kubernetes Dashboard</div>
+                            <div class="link-description">Container orchestration</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Terraform Cloud</div>
+                            <div class="link-description">Infrastructure as Code</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">AWS Console</div>
+                            <div class="link-description">Cloud services management</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="section" data-category="security">
+                <h2>
+                    <svg class="section-icon" viewBox="0 0 24 24">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
+                    </svg>
+                    Security
+                </h2>
+                <div class="link-grid">
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Vault</div>
+                            <div class="link-description">Secrets management</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">SIEM Dashboard</div>
+                            <div class="link-description">Security monitoring</div>
+                        </div>
+                    </a>
+                    <a href="#" class="link-item">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">Certificate Manager</div>
+                            <div class="link-description">SSL/TLS certificaten</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <button class="fab secondary" onclick="openSectionForm()" title="Nieuwe sectie toevoegen">📁</button>
+        <button class="fab" onclick="openAddForm()" title="Nieuwe link toevoegen">+</button>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeAddForm()"></div>
+
+    <div class="add-form" id="addForm">
+        <h2 style="margin-bottom: 20px; color: #2c3e50;">Nieuwe link toevoegen</h2>
+        <form id="linkForm">
+            <div class="form-group">
+                <label for="linkTitle">Titel:</label>
+                <input type="text" id="linkTitle" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="linkUrl">URL:</label>
+                <input type="url" id="linkUrl" name="url" required>
+            </div>
+            <div class="form-group">
+                <label for="linkDescription">Beschrijving:</label>
+                <textarea id="linkDescription" name="description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="linkCategory">Categorie:</label>
+                <select id="linkCategory" name="category" required>
+                    <option value="">Selecteer categorie</option>
+                </select>
+            </div>
+            <div class="form-buttons">
+                <button type="button" class="btn btn-secondary" onclick="closeAddForm()">Annuleren</button>
+                <button type="submit" class="btn btn-primary">Toevoegen</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="add-form" id="sectionForm">
+        <h2 style="margin-bottom: 20px; color: #2c3e50;">Nieuwe sectie toevoegen</h2>
+        <form id="sectionFormElement">
+            <div class="form-group">
+                <label for="sectionTitle">Sectie titel:</label>
+                <input type="text" id="sectionTitle" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="sectionId">Sectie ID:</label>
+                <input type="text" id="sectionId" name="id" required placeholder="bijv: my-tools">
+            </div>
+            <div class="form-group">
+                <label for="sectionIcon">Icoon SVG path:</label>
+                <textarea id="sectionIcon" name="icon" rows="3" placeholder="SVG path voor het icoon"></textarea>
+            </div>
+            <div class="form-buttons">
+                <button type="button" class="btn btn-secondary" onclick="closeSectionForm()">Annuleren</button>
+                <button type="submit" class="btn btn-primary">Toevoegen</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="add-form" id="editForm">
+        <h2 style="margin-bottom: 20px; color: #2c3e50;">Bewerken</h2>
+        <form id="editFormElement">
+            <div id="editFormContent"></div>
+            <div class="form-buttons">
+                <button type="button" class="btn btn-secondary" onclick="closeEditForm()">Annuleren</button>
+                <button type="submit" class="btn btn-primary">Opslaan</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Data storage with localStorage
+        let links = [];
+        let sections = [];
+        let isAdminMode = false;
+        let editingItem = null;
+        let editingType = null;
+        let linkIdCounter = 1;
+
+        // Default data
+        const defaultSections = [
+            { id: 'tools', title: 'Development Tools', icon: 'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z' },
+            { id: 'monitoring', title: 'Monitoring & Analytics', icon: 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z' },
+            { id: 'communication', title: 'Communicatie', icon: 'M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z' },
+            { id: 'documentation', title: 'Documentatie', icon: 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z' },
+            { id: 'infrastructure', title: 'Infrastructure', icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' },
+            { id: 'security', title: 'Security', icon: 'M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z' }
+        ];
+
+        const defaultLinks = [
+            { id: 1, title: 'Jira', url: 'https://jira.example.com', description: 'Issue tracking en projectmanagement', category: 'tools' },
+            { id: 2, title: 'GitLab', url: 'https://gitlab.example.com', description: 'Code repository en CI/CD', category: 'tools' },
+            { id: 3, title: 'SonarQube', url: 'https://sonar.example.com', description: 'Code quality en security analysis', category: 'tools' },
+            { id: 4, title: 'Grafana', url: 'https://grafana.example.com', description: 'Dashboards en visualisaties', category: 'monitoring' },
+            { id: 5, title: 'Prometheus', url: 'https://prometheus.example.com', description: 'Metrics en alerting', category: 'monitoring' },
+            { id: 6, title: 'Slack', url: 'https://slack.example.com', description: 'Team communicatie', category: 'communication' },
+            { id: 7, title: 'Teams', url: 'https://teams.example.com', description: 'Video calls en samenwerking', category: 'communication' },
+            { id: 8, title: 'API Documentatie', url: 'https://api-docs.example.com', description: 'Swagger/OpenAPI specs', category: 'documentation' },
+            { id: 9, title: 'Kubernetes Dashboard', url: 'https://k8s.example.com', description: 'Container orchestration', category: 'infrastructure' },
+            { id: 10, title: 'Vault', url: 'https://vault.example.com', description: 'Secrets management', category: 'security' }
+        ];
+
+        // LocalStorage helpers
+        function saveToLocalStorage() {
+            try {
+                const data = {
+                    sections: sections,
+                    links: links,
+                    linkIdCounter: linkIdCounter
+                };
+                localStorage.setItem('ipc-intranet-data', JSON.stringify(data));
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const savedData = localStorage.getItem('ipc-intranet-data');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    sections = data.sections || defaultSections;
+                    links = data.links || defaultLinks;
+                    linkIdCounter = data.linkIdCounter || 11;
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error loading from localStorage:', error);
+            }
+            return false;
+        }
+
+        function resetToDefaults() {
+            sections = [...defaultSections];
+            links = [...defaultLinks];
+            linkIdCounter = 11;
+            saveToLocalStorage();
+        }
+
+        // Admin mode toggle
+        function toggleAdmin() {
+            isAdminMode = !isAdminMode;
+            const adminBar = document.getElementById('adminBar');
+            const adminToggle = document.querySelector('.admin-toggle');
+            const mainContainer = document.getElementById('mainContainer');
+            
+            if (isAdminMode) {
+                adminBar.classList.add('active');
+                adminToggle.classList.add('active');
+                mainContainer.classList.add('body-offset');
+                document.body.classList.add('edit-mode');
+            } else {
+                adminBar.classList.remove('active');
+                adminToggle.classList.remove('active');
+                mainContainer.classList.remove('body-offset');
+                document.body.classList.remove('edit-mode');
+            }
+        }
+
+        // Section management
+        function openSectionForm() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('sectionForm').style.display = 'block';
+        }
+
+        function closeSectionForm() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('sectionForm').style.display = 'none';
+            document.getElementById('sectionFormElement').reset();
+        }
+
+        function addSection(sectionData) {
+            sections.push(sectionData);
+            saveToLocalStorage();
+            renderSections();
+            updateCategoryOptions();
+        }
+
+        function editSection(button) {
+            if (!isAdminMode) return;
+            
+            const section = button.closest('.section');
+            const category = section.dataset.category;
+            const sectionData = sections.find(s => s.id === category);
+            
+            if (!sectionData) return;
+            
+            editingItem = section;
+            editingType = 'section';
+            
+            document.getElementById('editFormContent').innerHTML = `
+                <div class="form-group">
+                    <label for="editSectionTitle">Sectie titel:</label>
+                    <input type="text" id="editSectionTitle" name="title" value="${sectionData.title}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editSectionId">Sectie ID:</label>
+                    <input type="text" id="editSectionId" name="id" value="${sectionData.id}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editSectionIcon">Icoon SVG path:</label>
+                    <textarea id="editSectionIcon" name="icon" rows="3">${sectionData.icon}</textarea>
+                </div>
+            `;
+            
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        function deleteSection(button) {
+            if (!isAdminMode) return;
+            
+            if (confirm('Weet je zeker dat je deze sectie wilt verwijderen? Alle links in deze sectie worden ook verwijderd.')) {
+                const section = button.closest('.section');
+                const category = section.dataset.category;
+                
+                // Remove from sections array
+                sections = sections.filter(s => s.id !== category);
+                
+                // Remove links from this category
+                links = links.filter(l => l.category !== category);
+                
+                // Save and refresh
+                saveToLocalStorage();
+                renderSections();
+                updateCategoryOptions();
+                
+                showNotification('Sectie verwijderd!');
+            }
+        }
+
+        // Link management
+        function editLink(button) {
+            if (!isAdminMode) return;
+            
+            const linkItem = button.closest('.link-item');
+            const linkId = linkItem.dataset.linkId;
+            const linkData = links.find(l => l.id == linkId);
+            
+            if (!linkData) {
+                // Extract data from DOM if not in links array
+                const title = linkItem.querySelector('.link-title').textContent;
+                const description = linkItem.querySelector('.link-description').textContent;
+                const url = linkItem.href;
+                const category = linkItem.closest('.section').dataset.category;
+                
+                linkData = { id: linkId, title, description, url, category };
+            }
+            
+            editingItem = linkItem;
+            editingType = 'link';
+            
+            document.getElementById('editFormContent').innerHTML = `
+                <div class="form-group">
+                    <label for="editLinkTitle">Titel:</label>
+                    <input type="text" id="editLinkTitle" name="title" value="${linkData.title}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLinkUrl">URL:</label>
+                    <input type="url" id="editLinkUrl" name="url" value="${linkData.url}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLinkDescription">Beschrijving:</label>
+                    <textarea id="editLinkDescription" name="description" rows="3">${linkData.description}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editLinkCategory">Categorie:</label>
+                    <select id="editLinkCategory" name="category" required>
+                        ${sections.map(s => `<option value="${s.id}" ${s.id === linkData.category ? 'selected' : ''}>${s.title}</option>`).join('')}
+                    </select>
+                </div>
+            `;
+            
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        function deleteLink(button) {
+            if (!isAdminMode) return;
+            
+            if (confirm('Weet je zeker dat je deze link wilt verwijderen?')) {
+                const linkItem = button.closest('.link-item');
+                const linkId = parseInt(linkItem.dataset.linkId);
+                
+                // Remove from links array
+                links = links.filter(l => l.id !== linkId);
+                
+                // Save and refresh
+                saveToLocalStorage();
+                renderSections();
+                
+                showNotification('Link verwijderd!');
+            }
+        }
+
+        function closeEditForm() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('editForm').style.display = 'none';
+            document.getElementById('editFormElement').reset();
+            editingItem = null;
+            editingType = null;
+        }
+
+        // Data management
+        function exportData() {
+            const data = {
+                sections: sections,
+                links: links
+            };
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'ipc-intranet-data.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data geëxporteerd!');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            if (data.sections && data.links) {
+                                sections = data.sections;
+                                links = data.links;
+                                linkIdCounter = data.linkIdCounter || Math.max(...links.map(l => l.id)) + 1;
+                                saveToLocalStorage();
+                                renderSections();
+                                updateCategoryOptions();
+                                showNotification('Data succesvol geïmporteerd!');
+                            } else {
+                                alert('Ongeldig bestandsformaat. Verwacht JSON met sections en links.');
+                            }
+                        } catch (error) {
+                            alert('Fout bij het laden van het bestand: ' + error.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function clearAllData() {
+            if (confirm('Weet je zeker dat je alle data wilt wissen? Deze actie kan niet ongedaan gemaakt worden.')) {
+                if (confirm('Dit zal alle aangepaste secties en links verwijderen. Weet je het zeker?')) {
+                    resetToDefaults();
+                    renderSections();
+                    updateCategoryOptions();
+                    showNotification('Alle data gewist en teruggezet naar standaard!');
+                }
+            }
+        }
+
+        function renderSections() {
+            const grid = document.getElementById('sectionsGrid');
+            grid.innerHTML = '';
+            
+            sections.forEach(section => {
+                const sectionHTML = `
+                    <div class="section" data-category="${section.id}">
+                        <div class="section-controls">
+                            <button class="control-btn edit" onclick="editSection(this)" title="Bewerk sectie">✏️</button>
+                            <button class="control-btn delete" onclick="deleteSection(this)" title="Verwijder sectie">🗑️</button>
+                        </div>
+                        <h2>
+                            <svg class="section-icon" viewBox="0 0 24 24">
+                                <path d="${section.icon}"/>
+                            </svg>
+                            ${section.title}
+                        </h2>
+                        <div class="link-grid"></div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', sectionHTML);
+            });
+            
+            // Re-add links to their sections
+            links.forEach(link => {
+                addLinkToDOM(link);
+            });
+            
+            updateCategoryOptions();
+        }
+
+        function updateCategoryOptions() {
+            const categorySelect = document.getElementById('linkCategory');
+            categorySelect.innerHTML = '<option value="">Selecteer categorie</option>';
+            sections.forEach(section => {
+                categorySelect.innerHTML += `<option value="${section.id}">${section.title}</option>`;
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const sections = document.querySelectorAll('.section');
+            
+            sections.forEach(section => {
+                const linkItems = section.querySelectorAll('.link-item');
+                let hasVisibleItems = false;
+                
+                linkItems.forEach(item => {
+                    const title = item.querySelector('.link-title').textContent.toLowerCase();
+                    const description = item.querySelector('.link-description').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                        hasVisibleItems = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                section.style.display = hasVisibleItems ? 'block' : 'none';
+            });
+        });
+
+        // Form functionality
+        function openAddForm() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('addForm').style.display = 'block';
+        }
+
+        function closeAddForm() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('addForm').style.display = 'none';
+            document.getElementById('linkForm').reset();
+        }
+
+        // Form submissions
+        document.getElementById('linkForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const newLink = {
+                id: linkIdCounter++,
+                title: formData.get('title'),
+                url: formData.get('url'),
+                description: formData.get('description'),
+                category: formData.get('category')
+            };
+            
+            links.push(newLink);
+            saveToLocalStorage();
+            renderSections();
+            closeAddForm();
+            showNotification('Link succesvol toegevoegd!');
+        });
+
+        document.getElementById('sectionFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const newSection = {
+                id: formData.get('id'),
+                title: formData.get('title'),
+                icon: formData.get('icon') || 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z'
+            };
+            
+            // Check if ID already exists
+            if (sections.find(s => s.id === newSection.id)) {
+                alert('Een sectie met deze ID bestaat al. Kies een andere ID.');
+                return;
+            }
+            
+            addSection(newSection);
+            closeSectionForm();
+            showNotification('Sectie succesvol toegevoegd!');
+        });
+
+        document.getElementById('editFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            
+            if (editingType === 'section') {
+                const category = editingItem.dataset.category;
+                const sectionIndex = sections.findIndex(s => s.id === category);
+                
+                if (sectionIndex !== -1) {
+                    const oldId = sections[sectionIndex].id;
+                    const newId = formData.get('id');
+                    const newTitle = formData.get('title');
+                    const newIcon = formData.get('icon');
+                    
+                    sections[sectionIndex] = {
+                        id: newId,
+                        title: newTitle,
+                        icon: newIcon
+                    };
+                    
+                    // Update links if section ID changed
+                    if (oldId !== newId) {
+                        links.forEach(link => {
+                            if (link.category === oldId) {
+                                link.category = newId;
+                            }
+                        });
+                    }
+                    
+                    saveToLocalStorage();
+                    renderSections();
+                    updateCategoryOptions();
+                    showNotification('Sectie bijgewerkt!');
+                }
+            } else if (editingType === 'link') {
+                const linkId = parseInt(editingItem.dataset.linkId);
+                const linkIndex = links.findIndex(l => l.id === linkId);
+                
+                const updatedLink = {
+                    id: linkId,
+                    title: formData.get('title'),
+                    url: formData.get('url'),
+                    description: formData.get('description'),
+                    category: formData.get('category')
+                };
+                
+                if (linkIndex !== -1) {
+                    links[linkIndex] = updatedLink;
+                } else {
+                    links.push(updatedLink);
+                }
+                
+                saveToLocalStorage();
+                renderSections();
+                showNotification('Link bijgewerkt!');
+            }
+            
+            closeEditForm();
+        });
+
+        function addLinkToDOM(link) {
+            const section = document.querySelector(`[data-category="${link.category}"]`);
+            if (section) {
+                const linkGrid = section.querySelector('.link-grid');
+                const linkHTML = `
+                    <a href="${link.url}" class="link-item" data-link-id="${link.id}" target="_blank">
+                        <div class="link-controls">
+                            <button class="link-control-btn edit" onclick="editLink(this)" title="Bewerk link">✏️</button>
+                            <button class="link-control-btn delete" onclick="deleteLink(this)" title="Verwijder link">🗑️</button>
+                        </div>
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <div class="link-title">${link.title}</div>
+                            <div class="link-description">${link.description}</div>
+                        </div>
+                    </a>
+                `;
+                linkGrid.insertAdjacentHTML('beforeend', linkHTML);
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #27ae60;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                z-index: 1002;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load data from localStorage or use defaults
+            if (!loadFromLocalStorage()) {
+                resetToDefaults();
+            }
+            
+            // Render the interface
+            renderSections();
+            updateCategoryOptions();
+            
+            // Add click handlers to handle placeholder links
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.link-item')) {
+                    const linkItem = e.target.closest('.link-item');
+                    if (!linkItem.href || linkItem.href === '#' || linkItem.href.includes('example.com')) {
+                        e.preventDefault();
+                        showNotification('Link nog niet geconfigureerd. Voeg de juiste URL toe via de beheerfunctie!');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
