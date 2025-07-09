@@ -971,16 +971,13 @@
             saveToStorage();
         }
 
-        // Admin mode with password protection
+        // Admin mode with session-based authentication
         function toggleAdmin() {
             if (!isAdminMode) {
-                // Check if user is already authenticated
-                const isAuthenticated = localStorage.getItem('admin-authenticated') === 'true';
-                const authTime = localStorage.getItem('admin-auth-time');
-                const currentTime = Date.now();
+                // Check if user is already authenticated this session
+                const isAuthenticated = sessionStorage.getItem('admin-authenticated') === 'true';
                 
-                // Session expires after 1 hour (3600000 ms)
-                if (isAuthenticated && authTime && (currentTime - parseInt(authTime)) < 3600000) {
+                if (isAuthenticated) {
                     activateAdminMode();
                 } else {
                     showPasswordModal();
@@ -1002,12 +999,6 @@
                     <label for="adminPassword">Wachtwoord:</label>
                     <input type="password" id="adminPassword" placeholder="Beheerder wachtwoord" autofocus>
                 </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="rememberAuth" checked>
-                        Onthoud voor 1 uur
-                    </label>
-                </div>
                 <div class="form-buttons">
                     <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Annuleren</button>
                     <button type="button" class="btn btn-primary" onclick="checkPassword()">Toegang</button>
@@ -1027,16 +1018,14 @@
 
         function checkPassword() {
             const password = document.getElementById('adminPassword').value;
-            const remember = document.getElementById('rememberAuth').checked;
             
             // Admin password for IPC team
             const ADMIN_PASSWORD = 'IPC2025!';
             
             if (password === ADMIN_PASSWORD) {
-                if (remember) {
-                    localStorage.setItem('admin-authenticated', 'true');
-                    localStorage.setItem('admin-auth-time', Date.now().toString());
-                }
+                // Store authentication for this session only
+                sessionStorage.setItem('admin-authenticated', 'true');
+                
                 closePasswordModal();
                 activateAdminMode();
                 showNotification('✅ Beheer modus geactiveerd!');
@@ -1074,9 +1063,8 @@
             adminToggle.classList.remove('active');
             document.body.classList.remove('edit-mode');
             
-            // Clear authentication
-            localStorage.removeItem('admin-authenticated');
-            localStorage.removeItem('admin-auth-time');
+            // Clear session authentication
+            sessionStorage.removeItem('admin-authenticated');
         }
 
         // Modal management
