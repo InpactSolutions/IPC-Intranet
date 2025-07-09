@@ -1759,7 +1759,7 @@
                             <button class="control-btn" onclick="deleteSection(this)" title="Verwijder sectie">🗑️</button>
                         </div>
                         <div class="section-header" draggable="false">
-                            <span class="drag-handle section-drag-handle" title="Versleep sectie">⋮⋮</span>
+                            <span class="drag-handle section-drag-handle" title="Versleep sectie">📁</span>
                             <svg class="section-icon" viewBox="0 0 24 24">
                                 <path d="${section.icon}"/>
                             </svg>
@@ -1821,39 +1821,31 @@
             
             if (!isAdminMode) return;
             
-            // Make ALL links draggable and add simple listeners
+            // Setup LINK drag and drop
             document.querySelectorAll('.link-item').forEach((linkItem, index) => {
                 linkItem.draggable = true;
                 console.log('Made link draggable:', linkItem.dataset.linkId);
                 
-                // Add dragstart listener - NO RESTRICTIONS
                 linkItem.addEventListener('dragstart', function(e) {
                     console.log('🔥 DRAGSTART FIRED for link:', linkItem.dataset.linkId);
                     
-                    // Set data - ALWAYS ALLOW
                     draggedElement = linkItem;
                     draggedType = 'link';
                     e.dataTransfer.setData('text/plain', linkItem.dataset.linkId);
                     
-                    // Visual feedback
                     linkItem.style.opacity = '0.5';
                     linkItem.style.transform = 'scale(0.95)';
-                    console.log('✅ Drag started successfully - NO RESTRICTIONS');
+                    console.log('✅ Link drag started successfully');
                 });
                 
-                // Add dragover listener
                 linkItem.addEventListener('dragover', function(e) {
-                    console.log('🔥 DRAGOVER FIRED for link:', linkItem.dataset.linkId);
-                    
                     if (draggedType === 'link' && linkItem !== draggedElement) {
                         e.preventDefault();
                         linkItem.style.backgroundColor = 'rgba(255, 255, 0, 0.8)';
                         linkItem.style.transform = 'scale(1.02)';
-                        console.log('✅ Allowing drop on link:', linkItem.dataset.linkId);
                     }
                 });
                 
-                // Add drop listener
                 linkItem.addEventListener('drop', function(e) {
                     console.log('🔥 DROP FIRED for link:', linkItem.dataset.linkId);
                     e.preventDefault();
@@ -1862,9 +1854,8 @@
                         const draggedId = parseInt(draggedElement.dataset.linkId);
                         const targetId = parseInt(linkItem.dataset.linkId);
                         
-                        console.log('🔄 Swapping', draggedId, 'with', targetId);
+                        console.log('🔄 Swapping links', draggedId, 'with', targetId);
                         
-                        // Find and swap
                         const draggedIndex = links.findIndex(l => l.id === draggedId);
                         const targetIndex = links.findIndex(l => l.id === targetId);
                         
@@ -1876,23 +1867,17 @@
                             links[targetIndex] = temp;
                             
                             console.log('✅ SWAP SUCCESSFUL!');
-                            console.log('📋 Before:', draggedId, 'at index', draggedIndex);
-                            console.log('📋 After:', targetId, 'at index', targetIndex);
                             
                             saveToStorage();
                             renderSections();
                             showNotification('🎉 Links verwisseld: ' + draggedId + ' ↔ ' + targetId);
-                        } else {
-                            console.error('❌ Could not find indices');
                         }
                     }
                 });
                 
-                // Add dragend listener
                 linkItem.addEventListener('dragend', function(e) {
                     console.log('🔥 DRAGEND FIRED for link:', linkItem.dataset.linkId);
                     
-                    // Reset all styling
                     document.querySelectorAll('.link-item').forEach(link => {
                         link.style.opacity = '';
                         link.style.backgroundColor = '';
@@ -1901,10 +1886,9 @@
                     
                     draggedElement = null;
                     draggedType = null;
-                    console.log('🧹 Cleanup complete');
+                    console.log('🧹 Link cleanup complete');
                 });
                 
-                // Add dragleave listener
                 linkItem.addEventListener('dragleave', function(e) {
                     if (draggedType === 'link' && linkItem !== draggedElement) {
                         linkItem.style.backgroundColor = '';
@@ -1913,7 +1897,79 @@
                 });
             });
             
-            console.log('✅ Drag and drop setup complete - ALL LINKS ARE DRAGGABLE');
+            // Setup SECTION drag and drop - simplified
+            document.querySelectorAll('.section').forEach((sectionItem, index) => {
+                sectionItem.draggable = true;
+                console.log('Made section draggable:', sectionItem.dataset.category);
+                
+                sectionItem.addEventListener('dragstart', function(e) {
+                    console.log('🔥 DRAGSTART FIRED for section:', sectionItem.dataset.category);
+                    
+                    draggedElement = sectionItem;
+                    draggedType = 'section';
+                    e.dataTransfer.setData('text/plain', sectionItem.dataset.category);
+                    
+                    sectionItem.style.opacity = '0.7';
+                    sectionItem.style.transform = 'scale(0.98)';
+                    console.log('✅ Section drag started successfully');
+                });
+                
+                sectionItem.addEventListener('dragover', function(e) {
+                    if (draggedType === 'section' && sectionItem !== draggedElement) {
+                        e.preventDefault();
+                        sectionItem.style.backgroundColor = 'rgba(0, 255, 0, 0.2)';
+                        sectionItem.style.transform = 'scale(1.02)';
+                    }
+                });
+                
+                sectionItem.addEventListener('drop', function(e) {
+                    console.log('🔥 DROP FIRED for section:', sectionItem.dataset.category);
+                    e.preventDefault();
+                    
+                    if (draggedType === 'section' && sectionItem !== draggedElement && draggedElement) {
+                        const draggedIndex = parseInt(draggedElement.dataset.sectionIndex);
+                        const targetIndex = parseInt(sectionItem.dataset.sectionIndex);
+                        
+                        console.log('🔄 Swapping sections', draggedIndex, 'with', targetIndex);
+                        console.log('📍 Found indices:', draggedIndex, targetIndex);
+                        
+                        if (draggedIndex !== -1 && targetIndex !== -1) {
+                            const temp = sections[draggedIndex];
+                            sections[draggedIndex] = sections[targetIndex];
+                            sections[targetIndex] = temp;
+                            
+                            console.log('✅ SECTION SWAP SUCCESSFUL!');
+                            
+                            saveToStorage();
+                            renderSections();
+                            showNotification('🎉 Secties verwisseld!');
+                        }
+                    }
+                });
+                
+                sectionItem.addEventListener('dragend', function(e) {
+                    console.log('🔥 DRAGEND FIRED for section:', sectionItem.dataset.category);
+                    
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.style.opacity = '';
+                        section.style.backgroundColor = '';
+                        section.style.transform = '';
+                    });
+                    
+                    draggedElement = null;
+                    draggedType = null;
+                    console.log('🧹 Section cleanup complete');
+                });
+                
+                sectionItem.addEventListener('dragleave', function(e) {
+                    if (draggedType === 'section' && sectionItem !== draggedElement) {
+                        sectionItem.style.backgroundColor = '';
+                        sectionItem.style.transform = '';
+                    }
+                });
+            });
+            
+            console.log('✅ Drag and drop setup complete - LINKS & SECTIONS DRAGGABLE');
         }
 
         // Intranet search functionality
