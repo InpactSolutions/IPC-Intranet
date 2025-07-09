@@ -141,6 +141,11 @@
             width: 320px;
         }
 
+        .search-input-container {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
         .search-box {
             width: 100%;
             padding: 12px 16px;
@@ -162,6 +167,10 @@
             outline: none;
             background: rgba(255, 255, 255, 0.25);
             border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-box.hidden {
+            display: none;
         }
 
         .search-tabs {
@@ -204,7 +213,7 @@
             margin-top: 4px;
             max-height: 300px;
             overflow-y: auto;
-            z-index: 1000;
+            z-index: 2000;
             display: none;
         }
 
@@ -878,8 +887,17 @@
                         <div class="search-tab active" data-search-type="internal">🔍 Intranet</div>
                         <div class="search-tab" data-search-type="google">🌐 Google</div>
                     </div>
-                    <input type="text" class="search-box" placeholder="Zoek naar tools, links of informatie..." id="searchInput">
-                    <div class="search-suggestions" id="searchSuggestions"></div>
+                    
+                    <!-- Intranet search -->
+                    <div class="search-input-container">
+                        <input type="text" class="search-box" placeholder="Zoek naar tools, links of informatie..." id="intranetSearchInput">
+                    </div>
+                    
+                    <!-- Google search -->
+                    <div class="search-input-container">
+                        <input type="text" class="search-box hidden" placeholder="Zoek op Google..." id="googleSearchInput">
+                        <div class="search-suggestions" id="searchSuggestions"></div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -1693,32 +1711,40 @@
                 // Update search type
                 currentSearchType = this.dataset.searchType;
                 
-                // Update placeholder
-                const searchInput = document.getElementById('searchInput');
-                if (currentSearchType === 'google') {
-                    searchInput.placeholder = 'Zoek op Google...';
+                // Show/hide appropriate search input
+                const intranetInput = document.getElementById('intranetSearchInput');
+                const googleInput = document.getElementById('googleSearchInput');
+                
+                if (currentSearchType === 'internal') {
+                    intranetInput.classList.remove('hidden');
+                    googleInput.classList.add('hidden');
+                    intranetInput.focus();
                 } else {
-                    searchInput.placeholder = 'Zoek naar tools, links of informatie...';
+                    intranetInput.classList.add('hidden');
+                    googleInput.classList.remove('hidden');
+                    googleInput.focus();
                 }
                 
-                // Clear current search
-                searchInput.value = '';
+                // Clear searches and hide suggestions
+                intranetInput.value = '';
+                googleInput.value = '';
                 hideSearchSuggestions();
                 
-                // Reset internal search if switching away from internal
-                if (currentSearchType !== 'internal') {
-                    document.querySelectorAll('.section').forEach(section => {
-                        section.style.display = 'block';
-                        section.querySelectorAll('.link-item').forEach(item => {
-                            item.style.display = 'flex';
-                        });
-                    });
+                // Reset internal search display when switching to Google
+                if (currentSearchType === 'google') {
+                    resetInternalSearchDisplay();
                 }
             });
         });
 
-        // Enhanced search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
+        // Intranet search functionality
+        document.getElementById('intranetSearchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            performInternalSearch(searchTerm);
+        });
+
+        // Google search functionality
+        document.getElementById('googleSearchInput').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase().trim();
             
             // Clear previous timeout
@@ -1726,26 +1752,20 @@
                 clearTimeout(searchTimeout);
             }
             
-            if (currentSearchType === 'internal') {
-                // Internal search (existing functionality)
-                performInternalSearch(searchTerm);
-            } else if (currentSearchType === 'google') {
-                // Google search with suggestions
-                if (searchTerm.length > 0) {
-                    searchTimeout = setTimeout(() => {
-                        showGoogleSuggestions(searchTerm);
-                    }, 300);
-                } else {
-                    hideSearchSuggestions();
-                }
+            if (searchTerm.length > 0) {
+                searchTimeout = setTimeout(() => {
+                    showGoogleSuggestions(searchTerm);
+                }, 300);
+            } else {
+                hideSearchSuggestions();
             }
         });
 
         // Handle Enter key for Google search
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        document.getElementById('googleSearchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const searchTerm = e.target.value.trim();
-                if (currentSearchType === 'google' && searchTerm) {
+                if (searchTerm) {
                     performGoogleSearch(searchTerm);
                 }
             }
@@ -1763,15 +1783,17 @@
                     const linkId = parseInt(item.dataset.linkId);
                     const linkData = links.find(l => l.id === linkId);
                     
-                    const title = item.querySelector('.link-title').textContent.toLowerCase();
-                    const description = item.querySelector('.link-description').textContent.toLowerCase();
-                    const tags = linkData && linkData.tags ? linkData.tags.join(' ').toLowerCase() : '';
-                    
-                    if (searchTerm === '' || title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
-                        item.style.display = 'flex';
-                        hasVisibleItems = true;
-                    } else {
-                        item.style.display = 'none';
+                    if (linkData) {
+                        const title = linkData.title.toLowerCase();
+                        const description = linkData.description.toLowerCase();
+                        const tags = linkData.tags ? linkData.tags.join(' ').toLowerCase() : '';
+                        
+                        if (searchTerm === '' || title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                            item.style.display = 'flex';
+                            hasVisibleItems = true;
+                        } else {
+                            item.style.display = 'none';
+                        }
                     }
                 });
                 
@@ -1779,10 +1801,20 @@
             });
         }
 
+        // Reset internal search display
+        function resetInternalSearchDisplay() {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'block';
+                section.querySelectorAll('.link-item').forEach(item => {
+                    item.style.display = 'flex';
+                });
+            });
+        }
+
         // Google search functions
         function showGoogleSuggestions(query) {
             const suggestions = [
-                { text: `"${query}"`, type: 'Zoeken', icon: '🔍' },
+                { text: `${query}`, type: 'Zoeken', icon: '🔍' },
                 { text: `${query} site:github.com`, type: 'GitHub', icon: '💻' },
                 { text: `${query} site:stackoverflow.com`, type: 'Stack Overflow', icon: '❓' },
                 { text: `${query} site:youtube.com`, type: 'YouTube', icon: '🎥' },
@@ -1820,8 +1852,8 @@
             const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
             window.open(googleUrl, '_blank');
             
-            // Clear search and hide suggestions
-            document.getElementById('searchInput').value = '';
+            // Clear Google search and hide suggestions
+            document.getElementById('googleSearchInput').value = '';
             hideSearchSuggestions();
         }
 
