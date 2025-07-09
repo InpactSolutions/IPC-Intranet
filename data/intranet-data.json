@@ -216,8 +216,51 @@
         "Connect",
         "Demo"
       ]
+    },
+    {
+      "id": 21,
+      "title": "Azure IPC",
+      "url": "https://dev.azure.com/inpactsolutions/ipc",
+      "description": "",
+      "category": "PE Beheer",
+      "tags": [
+        "azure",
+        "ipc"
+      ]
+    },
+    {
+      "id": 22,
+      "title": "Azure Releases",
+      "url": "https://dev.azure.com/inpactsolutions/ipc/_release",
+      "description": "",
+      "category": "PE Beheer",
+      "tags": [
+        "azure",
+        "ipc",
+        "release"
+      ]
+    },
+    {
+      "id": 23,
+      "title": "PHPMyAdmin",
+      "url": "https://tools.awisoftware.nl/phpadmin/index.php?server=2",
+      "description": "",
+      "category": "PE Beheer",
+      "tags": [
+        "PHPMyAdmin",
+        "IPC",
+        "PE"
+      ]
+    },
+    {
+      "id": 24,
+      "title": "Documentservice",
+      "url": "https://dms.awisoftware.nl/swagger/index.html",
+      "description": "",
+      "category": "PE Beheer",
+      "tags": []
     }
   ],
-  "linkIdCounter": 21,
-  "lastUpdated": "2025-07-09T10:58:04.734Z"
+  "linkIdCounter": 25,
+  "lastUpdated": "2025-07-09T13:11:58.517Z"
 }
