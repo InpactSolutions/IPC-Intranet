@@ -33,7 +33,9 @@
       "url": "https://awisoftware.atlassian.net/jira/software/c/projects/PE/boards/94",
       "description": "",
       "category": "tools",
-      "tags": []
+      "tags": [
+        "jira"
+      ]
     },
     {
       "id": 3,
@@ -41,7 +43,9 @@
       "url": "https://awisoftware.atlassian.net/jira/servicedesk/projects/IPC/boards/107",
       "description": "",
       "category": "tools",
-      "tags": []
+      "tags": [
+        "jira"
+      ]
     },
     {
       "id": 4,
@@ -105,7 +109,9 @@
       "url": "https://awisoftware.atlassian.net/wiki/spaces/PE/overview",
       "description": "",
       "category": "tools",
-      "tags": []
+      "tags": [
+        "jira"
+      ]
     },
     {
       "id": 13,
@@ -113,7 +119,9 @@
       "url": "https://awisoftware.atlassian.net/wiki/spaces/IK1/overview",
       "description": "",
       "category": "tools",
-      "tags": []
+      "tags": [
+        "jira"
+      ]
     },
     {
       "id": 14,
@@ -133,5 +141,5 @@
     }
   ],
   "linkIdCounter": 16,
-  "lastUpdated": "2025-07-09T09:09:56.232Z"
+  "lastUpdated": "2025-07-09T09:12:36.214Z"
 }
