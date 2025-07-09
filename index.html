@@ -1490,6 +1490,14 @@
                     section.style.cursor = 'move';
                     
                     section.addEventListener('dragstart', function(e) {
+                        // Check if drag started from a link drag handle
+                        if (e.target.closest('.drag-handle') && e.target.closest('.link-item')) {
+                            console.log('🚫 Preventing section drag - started from link handle');
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        }
+                        
                         console.log('🎯 Section drag started!');
                         draggedElement = section;
                         draggedType = 'section';
@@ -1558,8 +1566,7 @@
                         
                         dragHandle.addEventListener('mousedown', function(e) {
                             console.log('🔗 Drag handle mousedown!');
-                            e.preventDefault();
-                            e.stopPropagation();
+                            // Don't prevent default - let the drag happen naturally
                         });
                         
                         // Add dragstart to the handle itself
