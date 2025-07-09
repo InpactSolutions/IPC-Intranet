@@ -1849,8 +1849,6 @@
             linkElement.addEventListener('dragstart', function(e) {
                 console.log('Dragstart event triggered for link:', linkElement.dataset.linkId);
                 console.log('Drag from handle:', dragFromHandle);
-                console.log('Event target:', e.target);
-                console.log('Event target closest drag-handle:', e.target.closest('.drag-handle'));
                 
                 // Allow dragging if we clicked on the handle recently OR if the event target is the handle
                 if (!dragFromHandle && !e.target.closest('.drag-handle')) {
@@ -1865,14 +1863,26 @@
                 e.dataTransfer.setData('text/plain', linkElement.dataset.linkId);
                 e.dataTransfer.effectAllowed = 'move';
                 console.log('Started dragging link:', linkElement.dataset.linkId);
+                
+                // Add visual feedback to all other links
+                document.querySelectorAll('.link-item').forEach(otherLink => {
+                    if (otherLink !== linkElement) {
+                        otherLink.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
+                        otherLink.style.border = '2px dashed yellow';
+                    }
+                });
             });
             
             linkElement.addEventListener('dragover', function(e) {
+                console.log('Dragover event for link:', linkElement.dataset.linkId, 'draggedType:', draggedType);
+                
                 if (draggedType === 'link' && linkElement !== draggedElement) {
                     e.preventDefault();
                     e.dataTransfer.dropEffect = 'move';
                     linkElement.classList.add('drag-over');
-                    console.log('Dragging over link:', linkElement.dataset.linkId);
+                    linkElement.style.backgroundColor = 'rgba(0, 255, 0, 0.5)';
+                    linkElement.style.border = '2px solid lime';
+                    console.log('Allowing drop on link:', linkElement.dataset.linkId);
                 }
             });
             
@@ -1880,7 +1890,6 @@
                 console.log('Drop event fired on link:', linkElement.dataset.linkId);
                 console.log('Current draggedType:', draggedType);
                 console.log('Current draggedElement:', draggedElement);
-                console.log('Link element equals draggedElement:', linkElement === draggedElement);
                 
                 if (draggedType === 'link' && linkElement !== draggedElement && draggedElement) {
                     e.preventDefault();
@@ -1896,7 +1905,6 @@
                     const targetIndex = links.findIndex(l => l.id === targetLinkId);
                     
                     console.log('Found indices:', draggedIndex, targetIndex);
-                    console.log('Links array length:', links.length);
                     
                     if (draggedIndex !== -1 && targetIndex !== -1) {
                         console.log('Before swap - dragged link:', links[draggedIndex]);
@@ -1913,19 +1921,18 @@
                         
                         saveToStorage();
                         renderSections();
-                        showNotification('Links verwisseld!');
+                        showNotification('✅ Links verwisseld!');
                     } else {
                         console.error('Could not find link indices');
-                        console.error('Dragged ID:', draggedLinkId, 'Index:', draggedIndex);
-                        console.error('Target ID:', targetLinkId, 'Index:', targetIndex);
                     }
                 } else {
-                    console.log('Drop conditions not met:');
-                    console.log('- draggedType === "link":', draggedType === 'link');
-                    console.log('- linkElement !== draggedElement:', linkElement !== draggedElement);
-                    console.log('- draggedElement exists:', !!draggedElement);
+                    console.log('Drop conditions not met');
                 }
+                
+                // Clean up visual feedback
                 linkElement.classList.remove('drag-over');
+                linkElement.style.backgroundColor = '';
+                linkElement.style.border = '';
             });
             
             linkElement.addEventListener('dragenter', function(e) {
@@ -1936,18 +1943,25 @@
             });
             
             linkElement.addEventListener('dragend', function() {
-                console.log('Drag ended');
-                dragFromHandle = false; // Reset the flag
-                document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
-                document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                console.log('Drag ended for link:', linkElement.dataset.linkId);
+                dragFromHandle = false;
+                
+                // Clean up all visual feedback
+                document.querySelectorAll('.link-item').forEach(link => {
+                    link.classList.remove('dragging', 'drag-over');
+                    link.style.backgroundColor = '';
+                    link.style.border = '';
+                });
+                
                 draggedElement = null;
                 draggedType = null;
             });
             
             linkElement.addEventListener('dragleave', function(e) {
-                // Only remove drag-over if we're actually leaving the element
                 if (!linkElement.contains(e.relatedTarget)) {
                     linkElement.classList.remove('drag-over');
+                    linkElement.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
+                    linkElement.style.border = '2px dashed yellow';
                     console.log('Drag left link:', linkElement.dataset.linkId);
                 }
             });
