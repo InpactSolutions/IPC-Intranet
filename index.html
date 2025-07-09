@@ -1477,11 +1477,61 @@
             if (isAdminMode) {
                 console.log('👆 Admin mode is active, setting up drag and drop...');
                 console.log('🔍 Checking if setupDragAndDrop function exists:', typeof setupDragAndDrop);
-                try {
-                    setupDragAndDrop();
-                } catch (error) {
-                    console.error('❌ Error calling setupDragAndDrop:', error);
-                }
+                
+                // Direct implementation instead of function call
+                console.log('🔧 Setting up drag and drop directly...');
+                
+                const sectionElements = document.querySelectorAll('.section');
+                console.log('📦 Found sections:', sectionElements.length);
+                
+                sectionElements.forEach((section, index) => {
+                    console.log(`🎯 Setting up section ${index}`);
+                    section.draggable = true;
+                    section.style.cursor = 'move';
+                    
+                    section.addEventListener('dragstart', function(e) {
+                        console.log('🎯 Section drag started!');
+                        draggedElement = section;
+                        draggedType = 'section';
+                        section.classList.add('dragging');
+                        e.dataTransfer.setData('text/plain', section.dataset.category);
+                    });
+                    
+                    section.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        if (draggedType === 'section' && section !== draggedElement) {
+                            section.classList.add('drag-over');
+                        }
+                    });
+                    
+                    section.addEventListener('drop', function(e) {
+                        console.log('🎯 Section dropped!');
+                        e.preventDefault();
+                        if (draggedType === 'section' && section !== draggedElement && draggedElement) {
+                            const draggedIndex = parseInt(draggedElement.dataset.sectionIndex);
+                            const dropIndex = parseInt(section.dataset.sectionIndex);
+                            
+                            // Reorder sections array
+                            const draggedSection = sections[draggedIndex];
+                            sections.splice(draggedIndex, 1);
+                            sections.splice(dropIndex, 0, draggedSection);
+                            
+                            saveToStorage();
+                            renderSections();
+                            showNotification('Sectie volgorde aangepast!');
+                        }
+                        section.classList.remove('drag-over');
+                    });
+                    
+                    section.addEventListener('dragend', function(e) {
+                        document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+                        document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                        draggedElement = null;
+                        draggedType = null;
+                    });
+                });
+                
+                console.log('✅ Drag and drop setup complete');
             } else {
                 console.log('👀 Normal mode - no drag and drop setup');
             }
