@@ -152,8 +152,20 @@
         "chatgpt",
         "AI"
       ]
+    },
+    {
+      "id": 16,
+      "title": "IPC Servicedesk klantenoverzicht",
+      "url": "https://awisoftware.atlassian.net/jira/servicedesk/projects/IPC/organizations",
+      "description": "",
+      "category": "tools",
+      "tags": [
+        "jira",
+        "ipc",
+        "servicedesk"
+      ]
     }
   ],
-  "linkIdCounter": 16,
-  "lastUpdated": "2025-07-09T09:23:33.445Z"
+  "linkIdCounter": 17,
+  "lastUpdated": "2025-07-09T10:46:40.030Z"
 }
