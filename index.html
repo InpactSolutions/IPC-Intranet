@@ -1852,21 +1852,32 @@
                 if (!isAdminMode) return;
                 
                 link.addEventListener('dragstart', function(e) {
+                    // Only allow dragging from drag handle
+                    if (!e.target.closest('.drag-handle')) {
+                        e.preventDefault();
+                        return;
+                    }
+                    
                     draggedElement = link;
                     draggedType = 'link';
                     link.classList.add('dragging');
                     e.dataTransfer.setData('text/plain', link.dataset.linkId);
+                    e.dataTransfer.effectAllowed = 'move';
                     console.log('Started dragging link:', link.dataset.linkId);
                 });
                 
                 link.addEventListener('dragover', function(e) {
                     if (draggedType === 'link' && link !== draggedElement) {
                         e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
                         link.classList.add('drag-over');
+                        console.log('Dragging over link:', link.dataset.linkId);
                     }
                 });
                 
                 link.addEventListener('drop', function(e) {
+                    console.log('Drop event fired on link:', link.dataset.linkId);
+                    
                     if (draggedType === 'link' && link !== draggedElement && draggedElement) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -1874,40 +1885,53 @@
                         const draggedLinkId = parseInt(draggedElement.dataset.linkId);
                         const targetLinkId = parseInt(link.dataset.linkId);
                         
-                        console.log('Dropping link', draggedLinkId, 'on', targetLinkId);
+                        console.log('Attempting to swap links:', draggedLinkId, 'with', targetLinkId);
                         
                         // Find the links in the array
                         const draggedIndex = links.findIndex(l => l.id === draggedLinkId);
                         const targetIndex = links.findIndex(l => l.id === targetLinkId);
                         
+                        console.log('Found indices:', draggedIndex, targetIndex);
+                        
                         if (draggedIndex !== -1 && targetIndex !== -1) {
-                            // Get the dragged link
-                            const draggedLink = links[draggedIndex];
-                            const targetLink = links[targetIndex];
+                            // Simple swap - temporarily store one link
+                            const tempLink = links[draggedIndex];
+                            links[draggedIndex] = links[targetIndex];
+                            links[targetIndex] = tempLink;
                             
-                            // Simple swap
-                            links[draggedIndex] = targetLink;
-                            links[targetIndex] = draggedLink;
-                            
-                            console.log('Swapped links successfully');
+                            console.log('Links swapped successfully');
                             
                             saveToStorage();
                             renderSections();
                             showNotification('Links verwisseld!');
+                        } else {
+                            console.error('Could not find link indices');
                         }
                     }
                     link.classList.remove('drag-over');
                 });
                 
+                link.addEventListener('dragenter', function(e) {
+                    if (draggedType === 'link' && link !== draggedElement) {
+                        e.preventDefault();
+                        console.log('Drag entered link:', link.dataset.linkId);
+                    }
+                });
+                
                 link.addEventListener('dragend', function() {
+                    console.log('Drag ended');
                     document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
                     document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
                     draggedElement = null;
                     draggedType = null;
                 });
                 
-                link.addEventListener('dragleave', function() {
-                    link.classList.remove('drag-over');
+                link.addEventListener('dragleave', function(e) {
+                    // Only remove drag-over if we're actually leaving the element
+                    if (!link.contains(e.relatedTarget)) {
+                        link.classList.remove('drag-over');
+                        console.log('Drag left link:', link.dataset.linkId);
+                    }
                 });
             });
             
