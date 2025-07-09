@@ -1707,8 +1707,10 @@
 
         // News functionality - Smart rotating content without API calls
         async function loadNews() {
-            // Always use smart fallback for consistent experience
-            displaySmartRotatingNews();
+            // Wait a bit to ensure DOM is ready
+            setTimeout(() => {
+                displaySmartRotatingNews();
+            }, 100);
         }
 
         function displaySmartRotatingNews() {
@@ -1753,6 +1755,13 @@
             const selectedNews = selectDiverseNews(newsPool, 6);
             
             const newsList = document.getElementById('newsList');
+            
+            // Check if element exists
+            if (!newsList) {
+                console.log('News list element not found, skipping news display');
+                return;
+            }
+            
             newsList.innerHTML = '';
             
             selectedNews.forEach((item, index) => {
