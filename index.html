@@ -971,21 +971,112 @@
             saveToStorage();
         }
 
-        // Admin mode
+        // Admin mode with password protection
         function toggleAdmin() {
-            isAdminMode = !isAdminMode;
+            if (!isAdminMode) {
+                // Check if user is already authenticated
+                const isAuthenticated = localStorage.getItem('admin-authenticated') === 'true';
+                const authTime = localStorage.getItem('admin-auth-time');
+                const currentTime = Date.now();
+                
+                // Session expires after 1 hour (3600000 ms)
+                if (isAuthenticated && authTime && (currentTime - parseInt(authTime)) < 3600000) {
+                    activateAdminMode();
+                } else {
+                    showPasswordModal();
+                }
+            } else {
+                deactivateAdminMode();
+            }
+        }
+
+        function showPasswordModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'passwordModal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <h2>🔐 Beheer Toegang</h2>
+                <p>Voer het beheerder wachtwoord in:</p>
+                <div class="form-group">
+                    <label for="adminPassword">Wachtwoord:</label>
+                    <input type="password" id="adminPassword" placeholder="Beheerder wachtwoord" autofocus>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="rememberAuth" checked>
+                        Onthoud voor 1 uur
+                    </label>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Annuleren</button>
+                    <button type="button" class="btn btn-primary" onclick="checkPassword()">Toegang</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.getElementById('overlay').style.display = 'block';
+            
+            // Enter key support
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        }
+
+        function checkPassword() {
+            const password = document.getElementById('adminPassword').value;
+            const remember = document.getElementById('rememberAuth').checked;
+            
+            // Admin password for IPC team
+            const ADMIN_PASSWORD = 'IPC2025!';
+            
+            if (password === ADMIN_PASSWORD) {
+                if (remember) {
+                    localStorage.setItem('admin-authenticated', 'true');
+                    localStorage.setItem('admin-auth-time', Date.now().toString());
+                }
+                closePasswordModal();
+                activateAdminMode();
+                showNotification('✅ Beheer modus geactiveerd!');
+            } else {
+                showNotification('❌ Onjuist wachtwoord!');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
+            }
+        }
+
+        function closePasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            if (modal) {
+                modal.remove();
+            }
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function activateAdminMode() {
+            isAdminMode = true;
             const adminBar = document.getElementById('adminBar');
             const adminToggle = document.querySelector('.admin-toggle');
             
-            if (isAdminMode) {
-                adminBar.classList.add('active');
-                adminToggle.classList.add('active');
-                document.body.classList.add('edit-mode');
-            } else {
-                adminBar.classList.remove('active');
-                adminToggle.classList.remove('active');
-                document.body.classList.remove('edit-mode');
-            }
+            adminBar.classList.add('active');
+            adminToggle.classList.add('active');
+            document.body.classList.add('edit-mode');
+        }
+
+        function deactivateAdminMode() {
+            isAdminMode = false;
+            const adminBar = document.getElementById('adminBar');
+            const adminToggle = document.querySelector('.admin-toggle');
+            
+            adminBar.classList.remove('active');
+            adminToggle.classList.remove('active');
+            document.body.classList.remove('edit-mode');
+            
+            // Clear authentication
+            localStorage.removeItem('admin-authenticated');
+            localStorage.removeItem('admin-auth-time');
         }
 
         // Modal management
