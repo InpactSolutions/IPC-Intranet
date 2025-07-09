@@ -607,17 +607,30 @@
             cursor: move;
             color: rgba(255, 255, 255, 0.5);
             margin-right: 8px;
-            font-size: 12px;
+            font-size: 14px;
             opacity: 0;
             transition: opacity 0.2s ease;
+            user-select: none;
+            padding: 4px;
+            border-radius: 4px;
         }
 
         .drag-handle:hover {
             color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .edit-mode .drag-handle {
             opacity: 1;
+        }
+
+        .edit-mode .section-header {
+            cursor: move;
+        }
+
+        .edit-mode .section-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
         }
 
         .section.dragging {
@@ -1950,9 +1963,9 @@
             // Refresh weather every 30 minutes
             setInterval(loadWeather, 30 * 60 * 1000);
             
-            // Handle link clicks
+            // Handle link clicks - prevent drag from triggering navigation
             document.addEventListener('click', function(e) {
-                if (e.target.closest('.link-control-btn')) {
+                if (e.target.closest('.link-control-btn') || e.target.closest('.drag-handle')) {
                     e.preventDefault();
                     e.stopPropagation();
                     return;
@@ -1964,6 +1977,13 @@
                         e.preventDefault();
                         showNotification('Link nog niet geconfigureerd!');
                     }
+                }
+            });
+
+            // Prevent drag handle from triggering link navigation
+            document.addEventListener('mousedown', function(e) {
+                if (e.target.closest('.drag-handle')) {
+                    e.preventDefault();
                 }
             });
         });
