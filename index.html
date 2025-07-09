@@ -206,77 +206,13 @@
             width: 250px;
         }
 
-        /* Google CSE Styling */
-        .gcse-search {
-            width: 100% !important;
+        .search-box.google-search {
+            border-color: rgba(66, 133, 244, 0.5);
         }
 
-        .gcse-search .gsc-search-box {
-            margin: 0 !important;
-            border: none !important;
-            background: transparent !important;
-        }
-
-        .gcse-search .gsc-search-box .gsc-input {
-            background: rgba(255, 255, 255, 0.15) !important;
-            border: 1px solid rgba(66, 133, 244, 0.5) !important;
-            border-radius: 12px !important;
-            color: white !important;
-            font-size: 14px !important;
-            padding: 12px 16px !important;
-            width: 200px !important;
-            backdrop-filter: blur(10px) !important;
-            transition: all 0.3s ease !important;
-        }
-
-        .gcse-search .gsc-search-box .gsc-input:focus {
-            background: rgba(255, 255, 255, 0.25) !important;
-            border-color: rgba(66, 133, 244, 0.8) !important;
-            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2) !important;
-            outline: none !important;
-            width: 250px !important;
-        }
-
-        .gcse-search .gsc-search-box .gsc-input::placeholder {
-            color: rgba(255, 255, 255, 0.6) !important;
-        }
-
-        .gcse-search .gsc-search-button {
-            background: rgba(66, 133, 244, 0.8) !important;
-            border: none !important;
-            border-radius: 8px !important;
-            margin-left: 8px !important;
-            padding: 8px 12px !important;
-            min-width: 40px !important;
-            height: 40px !important;
-        }
-
-        .gcse-search .gsc-search-button:hover {
-            background: rgba(66, 133, 244, 1) !important;
-        }
-
-        .gcse-search .gsc-search-button svg {
-            fill: white !important;
-        }
-
-        .gcse-search .gsc-results-wrapper-overlay {
-            background: rgba(255, 255, 255, 0.98) !important;
-            backdrop-filter: blur(20px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            border-radius: 12px !important;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
-            z-index: 99999 !important;
-            margin-top: 4px !important;
-        }
-
-        .gcse-search .gsc-results-wrapper-overlay .gsc-results {
-            background: transparent !important;
-            color: #333 !important;
-        }
-
-        .gcse-search .gsc-resultsbox-visible {
-            box-shadow: none !important;
-            border: none !important;
+        .search-box.google-search:focus {
+            border-color: rgba(66, 133, 244, 0.8);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
         }
 
         .search-box.intranet-search {
@@ -1077,7 +1013,8 @@
                     <div class="search-box-wrapper">
                         <span class="search-label">🌐 Google:</span>
                         <div class="search-input-container">
-                            <div class="gcse-search"></div>
+                            <input type="text" class="search-box google-search" placeholder="Zoek op Google..." id="googleSearchInput">
+                            <div class="search-suggestions" id="googleSuggestions"></div>
                         </div>
                     </div>
                 </div>
@@ -1087,6 +1024,9 @@
         <div class="main-grid" id="mainGrid">
             <!-- Sections will be dynamically loaded here -->
         </div>
+        
+        <!-- Google CSE Results Container -->
+        <div class="gcse-searchresults-only" id="googleResults"></div>
     </div>
 
     <button class="fab secondary" onclick="openSectionForm()" title="Nieuwe sectie">📁</button>
@@ -1173,6 +1113,7 @@
         // Search timeouts
         let intranetSearchTimeout = null;
         let afdSearchTimeout = null;
+        let googleSearchTimeout = null;
 
         // Default data
         const defaultSections = [
@@ -1958,28 +1899,102 @@
             document.getElementById('intranetSuggestions').style.display = 'none';
         }
 
-        // Google CSE integration
+        // Google search functions
+        function showGoogleSuggestions(query) {
+            const suggestions = [
+                { text: `"${query}"`, type: 'Exacte match', icon: '🎯' },
+                { text: `${query} filetype:pdf`, type: 'PDF bestanden', icon: '📄' },
+                { text: `${query} site:github.com`, type: 'GitHub', icon: '💻' },
+                { text: `${query} -site:stackoverflow.com`, type: 'Exclusief SO', icon: '🚫' },
+                { text: query, type: 'Zoeken', icon: '🔍' }
+            ];
+            
+            const suggestionsContainer = document.getElementById('googleSuggestions');
+            suggestionsContainer.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const suggestionElement = document.createElement('div');
+                suggestionElement.className = 'search-suggestion';
+                suggestionElement.innerHTML = `
+                    <span class="suggestion-icon">${suggestion.icon}</span>
+                    <span class="suggestion-text">${suggestion.text}</span>
+                    <span class="suggestion-type">${suggestion.type}</span>
+                `;
+                
+                suggestionElement.addEventListener('click', function() {
+                    performGoogleSearch(suggestion.text);
+                });
+                
+                suggestionsContainer.appendChild(suggestionElement);
+            });
+            
+            suggestionsContainer.style.display = 'block';
+        }
+
+        function hideGoogleSuggestions() {
+            document.getElementById('googleSuggestions').style.display = 'none';
+        }
+
+        function performGoogleSearch(query) {
+            // Clear previous results
+            const resultsContainer = document.getElementById('googleResults');
+            resultsContainer.innerHTML = '';
+            
+            // Show loading state
+            resultsContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;"><div style="font-size: 24px;">⏳</div><div>Zoeken...</div></div>';
+            resultsContainer.classList.add('visible');
+            
+            // Trigger Google CSE search
+            if (typeof google !== 'undefined' && google.search && google.search.cse) {
+                try {
+                    google.search.cse.element.render({
+                        div: "googleResults",
+                        tag: 'searchresults-only',
+                        attributes: {
+                            queryParameterName: 'query',
+                            defaultToRefinement: query
+                        }
+                    });
+                    
+                    // Execute the search
+                    google.search.cse.element.go();
+                    
+                } catch (error) {
+                    console.error('Google CSE search error:', error);
+                    // Fallback to regular Google search
+                    fallbackGoogleSearch(query);
+                }
+            } else {
+                // Fallback to regular Google search
+                fallbackGoogleSearch(query);
+            }
+            
+            // Clear search input and hide suggestions
+            document.getElementById('googleSearchInput').value = '';
+            hideGoogleSuggestions();
+            
+            // Show notification
+            showNotification(`🔍 Google zoeken naar: "${query}"`);
+        }
+
+        function fallbackGoogleSearch(query) {
+            const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+            window.open(googleUrl, '_blank');
+            
+            // Hide results container
+            document.getElementById('googleResults').classList.remove('visible');
+        }
+
+        // Initialize Google CSE
         function initializeGoogleCSE() {
-            // Wait for Google CSE to load and apply styling
             setTimeout(() => {
-                const cseInput = document.querySelector('.gsc-input');
-                if (cseInput) {
-                    cseInput.setAttribute('placeholder', 'Zoek op Google...');
+                if (typeof google !== 'undefined' && google.search && google.search.cse) {
                     console.log('Google CSE initialized successfully');
                 } else {
-                    console.log('Google CSE not found, retrying...');
-                    // Retry if not loaded yet
-                    if (document.querySelector('.gcse-search')) {
-                        setTimeout(initializeGoogleCSE, 1000);
-                    }
+                    console.log('Google CSE not available, using fallback');
                 }
             }, 2000);
         }
-
-        // Initialize Google CSE when page loads
-        window.addEventListener('load', function() {
-            initializeGoogleCSE();
-        });
 
         // AFD search functions
         function showAFDSuggestions(query) {
@@ -2331,6 +2346,23 @@
                 }
             });
 
+            // Google search
+            document.getElementById('googleSearchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                
+                if (googleSearchTimeout) {
+                    clearTimeout(googleSearchTimeout);
+                }
+                
+                if (searchTerm.length > 0) {
+                    googleSearchTimeout = setTimeout(() => {
+                        showGoogleSuggestions(searchTerm);
+                    }, 300);
+                } else {
+                    hideGoogleSuggestions();
+                }
+            });
+
             // Handle Enter key for AFD search
             document.getElementById('afdSearchInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
@@ -2341,7 +2373,17 @@
                 }
             });
 
-            // Handle Enter key for intranet search (just focus first result)
+            // Handle Enter key for Google search
+            document.getElementById('googleSearchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = e.target.value.trim();
+                    if (searchTerm) {
+                        performGoogleSearch(searchTerm);
+                    }
+                }
+            });
+
+            // Handle Enter key for intranet search
             document.getElementById('intranetSearchInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     const firstSuggestion = document.querySelector('#intranetSuggestions .search-suggestion');
@@ -2359,7 +2401,17 @@
                 if (!e.target.closest('#afdSearchInput') && !e.target.closest('#afdSuggestions')) {
                     hideAFDSuggestions();
                 }
+                if (!e.target.closest('#googleSearchInput') && !e.target.closest('#googleSuggestions')) {
+                    hideGoogleSuggestions();
+                }
+                // Hide Google results when clicking outside
+                if (!e.target.closest('#googleResults') && !e.target.closest('#googleSearchInput')) {
+                    document.getElementById('googleResults').classList.remove('visible');
+                }
             });
+            
+            // Initialize Google CSE
+            initializeGoogleCSE();
         }
     </script>
 </body>
