@@ -1825,11 +1825,31 @@
             
             linkElement.draggable = true;
             
+            // Track if we're dragging from the handle
+            let dragFromHandle = false;
+            
+            // Listen for mousedown on drag handle
+            const dragHandle = linkElement.querySelector('.drag-handle');
+            if (dragHandle) {
+                dragHandle.addEventListener('mousedown', function(e) {
+                    dragFromHandle = true;
+                    console.log('Mouse down on drag handle for link:', linkElement.dataset.linkId);
+                    
+                    // Reset after a short delay
+                    setTimeout(() => {
+                        dragFromHandle = false;
+                    }, 500);
+                });
+            }
+            
             linkElement.addEventListener('dragstart', function(e) {
-                console.log('Dragstart event triggered');
+                console.log('Dragstart event triggered for link:', linkElement.dataset.linkId);
+                console.log('Drag from handle:', dragFromHandle);
+                console.log('Event target:', e.target);
+                console.log('Event target closest drag-handle:', e.target.closest('.drag-handle'));
                 
-                // Only allow dragging from drag handle
-                if (!e.target.closest('.drag-handle')) {
+                // Allow dragging if we clicked on the handle recently OR if the event target is the handle
+                if (!dragFromHandle && !e.target.closest('.drag-handle')) {
                     console.log('Drag prevented - not from handle');
                     e.preventDefault();
                     return;
@@ -1897,6 +1917,7 @@
             
             linkElement.addEventListener('dragend', function() {
                 console.log('Drag ended');
+                dragFromHandle = false; // Reset the flag
                 document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
                 document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
                 draggedElement = null;
