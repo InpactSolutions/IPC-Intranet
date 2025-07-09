@@ -602,6 +602,7 @@
         </div>
         <div class="admin-controls">
             <button class="admin-btn" onclick="exportData()">📤 Export</button>
+            <button class="admin-btn" onclick="saveForGitHub()">💾 Save for GitHub</button>
             <button class="admin-btn" onclick="importData()">📥 Import</button>
             <button class="admin-btn danger" onclick="clearAllData()">🗑️ Reset</button>
         </div>
@@ -751,6 +752,43 @@
                 console.error('Error loading from storage:', error);
             }
             return false;
+        }
+
+        // GitHub Pages JSON file loading
+        async function loadFromGitHub() {
+            try {
+                const response = await fetch('./data/intranet-data.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    sections = data.sections || defaultSections;
+                    links = data.links || defaultLinks;
+                    linkIdCounter = data.linkIdCounter || 16;
+                    console.log('Data loaded from GitHub Pages');
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error loading from GitHub:', error);
+            }
+            return false;
+        }
+
+        // Save data to downloadable JSON (for GitHub commit)
+        function saveForGitHub() {
+            const data = {
+                sections: sections,
+                links: links,
+                linkIdCounter: linkIdCounter,
+                lastUpdated: new Date().toISOString()
+            };
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'intranet-data.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data gedownload! Upload naar GitHub /data/ folder');
         }
 
         function resetToDefaults() {
@@ -1175,8 +1213,20 @@
         }
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!loadFromStorage()) {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Try to load from GitHub first, then localStorage, then defaults
+            let dataLoaded = false;
+            
+            // First try GitHub Pages
+            dataLoaded = await loadFromGitHub();
+            
+            // Fallback to localStorage
+            if (!dataLoaded) {
+                dataLoaded = loadFromStorage();
+            }
+            
+            // Final fallback to defaults
+            if (!dataLoaded) {
                 resetToDefaults();
             }
             
