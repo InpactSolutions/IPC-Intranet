@@ -1546,12 +1546,13 @@
                 linkElements.forEach((link, index) => {
                     console.log(`🔗 Setting up link ${index}`);
                     
-                    // Make the drag handle the draggable element, not the link
+                    // Make the whole link draggable, but only when drag starts from handle
+                    link.draggable = true;
+                    
                     const dragHandle = link.querySelector('.drag-handle');
                     console.log(`🔍 Drag handle found for link ${index}:`, !!dragHandle);
                     
                     if (dragHandle) {
-                        dragHandle.draggable = true;
                         dragHandle.style.cursor = 'move';
                         dragHandle.style.backgroundColor = 'rgba(255,255,255,0.2)'; // Visual debug
                         
@@ -1566,29 +1567,34 @@
                         
                         dragHandle.addEventListener('mousedown', function(e) {
                             console.log('🔗 Drag handle mousedown!');
-                            // Don't prevent default - let the drag happen naturally
-                        });
-                        
-                        // Add dragstart to the handle itself
-                        dragHandle.addEventListener('dragstart', function(e) {
-                            console.log('🔗 Link drag started via handle!');
-                            draggedElement = link;
-                            draggedType = 'link';
-                            link.classList.add('dragging');
-                            e.dataTransfer.setData('text/plain', link.dataset.linkId);
-                            e.stopPropagation(); // Prevent section drag
+                            // Mark that drag should be allowed from this link
+                            link.setAttribute('data-drag-allowed', 'true');
                         });
                         
                     } else {
                         console.warn(`❌ No drag handle found for link ${index}`);
                     }
                     
-                    // Also prevent section drag when starting from within a link
+                    // Link dragstart - only allow if started from handle
                     link.addEventListener('dragstart', function(e) {
-                        if (e.target.closest('.drag-handle')) {
-                            console.log('🔗 Link drag started from within link!');
-                            e.stopPropagation(); // Prevent section drag
+                        const dragAllowed = link.getAttribute('data-drag-allowed') === 'true';
+                        const fromHandle = e.target.closest('.drag-handle');
+                        
+                        if (!dragAllowed && !fromHandle) {
+                            console.log('🚫 Link drag prevented - not from handle');
+                            e.preventDefault();
+                            return false;
                         }
+                        
+                        console.log('🔗 Link drag started!');
+                        draggedElement = link;
+                        draggedType = 'link';
+                        link.classList.add('dragging');
+                        e.dataTransfer.setData('text/plain', link.dataset.linkId);
+                        e.stopPropagation(); // Prevent section drag
+                        
+                        // Clear the flag
+                        link.removeAttribute('data-drag-allowed');
                     });
                     
                     link.addEventListener('dragover', function(e) {
