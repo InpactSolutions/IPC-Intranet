@@ -366,6 +366,15 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             z-index: 1000;
             transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.8);
+        }
+
+        .edit-mode .fab {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
         }
 
         .fab:hover {
@@ -375,6 +384,14 @@
         .fab.secondary {
             bottom: 92px;
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .edit-mode .fab.secondary {
+            transform: scale(1);
+        }
+
+        .edit-mode .fab.secondary:hover {
+            transform: scale(1.1);
         }
 
         .overlay {
@@ -973,11 +990,19 @@
 
         // Modal management
         function openAddForm() {
+            if (!isAdminMode) {
+                showNotification('⚠️ Ga eerst naar beheer modus om links toe te voegen');
+                return;
+            }
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('addModal').style.display = 'block';
         }
 
         function openSectionForm() {
+            if (!isAdminMode) {
+                showNotification('⚠️ Ga eerst naar beheer modus om secties toe te voegen');
+                return;
+            }
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('sectionModal').style.display = 'block';
         }
