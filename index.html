@@ -608,10 +608,43 @@
             color: rgba(255, 255, 255, 0.5);
             margin-right: 8px;
             font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
         .drag-handle:hover {
             color: rgba(255, 255, 255, 0.8);
+        }
+
+        .edit-mode .drag-handle {
+            opacity: 1;
+        }
+
+        .section.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .link-item.dragging {
+            opacity: 0.5;
+            transform: rotate(2deg);
+        }
+
+        .drag-over {
+            border: 2px dashed rgba(255, 255, 255, 0.5) !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .drop-indicator {
+            height: 2px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            margin: 4px 0;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .drop-indicator.active {
+            opacity: 1;
         }
 
         .edit-mode .section {
@@ -872,6 +905,8 @@
         let editingItem = null;
         let editingType = null;
         let linkIdCounter = 1;
+        let draggedElement = null;
+        let draggedType = null;
 
         // Default data
         const defaultSections = [
@@ -1383,14 +1418,15 @@
             const grid = document.getElementById('mainGrid');
             grid.innerHTML = '';
             
-            sections.forEach(section => {
+            sections.forEach((section, index) => {
                 const sectionHTML = `
-                    <div class="section" data-category="${section.id}">
+                    <div class="section" data-category="${section.id}" draggable="true" data-section-index="${index}">
                         <div class="section-controls">
                             <button class="control-btn" onclick="editSection(this)" title="Bewerk sectie">✏️</button>
                             <button class="control-btn" onclick="deleteSection(this)" title="Verwijder sectie">🗑️</button>
                         </div>
                         <div class="section-header">
+                            <span class="drag-handle" title="Versleep sectie">⋮⋮</span>
                             <svg class="section-icon" viewBox="0 0 24 24">
                                 <path d="${section.icon}"/>
                             </svg>
@@ -1406,13 +1442,18 @@
             links.forEach(link => {
                 addLinkToDOM(link);
             });
+            
+            // Add drag and drop event listeners
+            setupDragAndDrop();
         }
 
         function addLinkToDOM(link) {
             const linksGrid = document.getElementById(`links-${link.category}`);
             if (linksGrid) {
+                const linkIndex = links.findIndex(l => l.id === link.id);
                 const linkHTML = `
-                    <a href="${link.url}" class="link-item" data-link-id="${link.id}" target="_blank">
+                    <a href="${link.url}" class="link-item" data-link-id="${link.id}" data-link-index="${linkIndex}" draggable="true" target="_blank">
+                        <span class="drag-handle" title="Versleep link">⋮⋮</span>
                         <svg class="link-icon" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                         </svg>
@@ -1436,6 +1477,193 @@
             sections.forEach(section => {
                 categorySelect.innerHTML += `<option value="${section.id}">${section.title}</option>`;
             });
+        }
+
+        // Drag and Drop functionality
+        function setupDragAndDrop() {
+            // Only enable drag and drop in admin mode
+            if (!isAdminMode) return;
+            
+            // Section drag and drop
+            document.querySelectorAll('.section').forEach(section => {
+                section.addEventListener('dragstart', handleSectionDragStart);
+                section.addEventListener('dragover', handleSectionDragOver);
+                section.addEventListener('drop', handleSectionDrop);
+                section.addEventListener('dragend', handleDragEnd);
+            });
+            
+            // Link drag and drop
+            document.querySelectorAll('.link-item').forEach(link => {
+                link.addEventListener('dragstart', handleLinkDragStart);
+                link.addEventListener('dragover', handleLinkDragOver);
+                link.addEventListener('drop', handleLinkDrop);
+                link.addEventListener('dragend', handleDragEnd);
+            });
+            
+            // Links grid drag and drop (for cross-section moves)
+            document.querySelectorAll('.links-grid').forEach(grid => {
+                grid.addEventListener('dragover', handleLinksGridDragOver);
+                grid.addEventListener('drop', handleLinksGridDrop);
+            });
+        }
+
+        function handleSectionDragStart(e) {
+            if (!isAdminMode) return;
+            
+            // Only allow dragging by the drag handle
+            if (!e.target.classList.contains('drag-handle') && !e.target.closest('.drag-handle')) {
+                e.preventDefault();
+                return;
+            }
+            
+            const section = e.target.closest('.section');
+            draggedElement = section;
+            draggedType = 'section';
+            
+            section.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', section.outerHTML);
+        }
+
+        function handleSectionDragOver(e) {
+            if (!isAdminMode || draggedType !== 'section') return;
+            
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            const section = e.currentTarget;
+            if (section !== draggedElement) {
+                section.classList.add('drag-over');
+            }
+        }
+
+        function handleSectionDrop(e) {
+            if (!isAdminMode || draggedType !== 'section') return;
+            
+            e.preventDefault();
+            const dropSection = e.currentTarget;
+            
+            if (dropSection !== draggedElement && draggedElement) {
+                const draggedIndex = parseInt(draggedElement.dataset.sectionIndex);
+                const dropIndex = parseInt(dropSection.dataset.sectionIndex);
+                
+                // Reorder sections array
+                const draggedSection = sections[draggedIndex];
+                sections.splice(draggedIndex, 1);
+                sections.splice(dropIndex, 0, draggedSection);
+                
+                saveToStorage();
+                renderSections();
+                showNotification('Sectie volgorde aangepast!');
+            }
+            
+            dropSection.classList.remove('drag-over');
+        }
+
+        function handleLinkDragStart(e) {
+            if (!isAdminMode) return;
+            
+            // Only allow dragging by the drag handle
+            if (!e.target.classList.contains('drag-handle') && !e.target.closest('.drag-handle')) {
+                e.preventDefault();
+                return;
+            }
+            
+            const link = e.target.closest('.link-item');
+            draggedElement = link;
+            draggedType = 'link';
+            
+            link.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', link.outerHTML);
+        }
+
+        function handleLinkDragOver(e) {
+            if (!isAdminMode || draggedType !== 'link') return;
+            
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            const link = e.currentTarget;
+            if (link !== draggedElement) {
+                link.classList.add('drag-over');
+            }
+        }
+
+        function handleLinkDrop(e) {
+            if (!isAdminMode || draggedType !== 'link') return;
+            
+            e.preventDefault();
+            const dropLink = e.currentTarget;
+            
+            if (dropLink !== draggedElement && draggedElement) {
+                const draggedLinkId = parseInt(draggedElement.dataset.linkId);
+                const dropLinkId = parseInt(dropLink.dataset.linkId);
+                
+                const draggedIndex = links.findIndex(l => l.id === draggedLinkId);
+                const dropIndex = links.findIndex(l => l.id === dropLinkId);
+                
+                // Reorder links array
+                const draggedLink = links[draggedIndex];
+                links.splice(draggedIndex, 1);
+                links.splice(dropIndex, 0, draggedLink);
+                
+                saveToStorage();
+                renderSections();
+                showNotification('Link volgorde aangepast!');
+            }
+            
+            dropLink.classList.remove('drag-over');
+        }
+
+        function handleLinksGridDragOver(e) {
+            if (!isAdminMode || draggedType !== 'link') return;
+            
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            const grid = e.currentTarget;
+            grid.classList.add('drag-over');
+        }
+
+        function handleLinksGridDrop(e) {
+            if (!isAdminMode || draggedType !== 'link') return;
+            
+            e.preventDefault();
+            const grid = e.currentTarget;
+            
+            if (draggedElement) {
+                const draggedLinkId = parseInt(draggedElement.dataset.linkId);
+                const targetCategory = grid.id.replace('links-', '');
+                
+                // Find the link and update its category
+                const linkIndex = links.findIndex(l => l.id === draggedLinkId);
+                if (linkIndex !== -1) {
+                    links[linkIndex].category = targetCategory;
+                    
+                    saveToStorage();
+                    renderSections();
+                    showNotification('Link verplaatst naar andere sectie!');
+                }
+            }
+            
+            grid.classList.remove('drag-over');
+        }
+
+        function handleDragEnd(e) {
+            if (!isAdminMode) return;
+            
+            // Clean up drag state
+            document.querySelectorAll('.dragging').forEach(el => {
+                el.classList.remove('dragging');
+            });
+            
+            document.querySelectorAll('.drag-over').forEach(el => {
+                el.classList.remove('drag-over');
+            });
+            
+            draggedElement = null;
+            draggedType = null;
         }
 
         // Search functionality
