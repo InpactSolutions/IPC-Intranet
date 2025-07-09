@@ -207,6 +207,15 @@
             box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.2);
         }
 
+        .search-box.afd-search {
+            border-color: rgba(255, 152, 0, 0.5);
+        }
+
+        .search-box.afd-search:focus {
+            border-color: rgba(255, 152, 0, 0.8);
+            box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+        }
+
         .search-suggestions {
             position: absolute;
             top: 100%;
@@ -733,6 +742,21 @@
         }
 
         /* Responsive design */
+        @media (max-width: 1200px) {
+            .search-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .search-box {
+                width: 280px;
+            }
+            
+            .search-box:focus {
+                width: 320px;
+            }
+        }
+
         @media (max-width: 1024px) {
             header {
                 flex-direction: column;
@@ -917,6 +941,14 @@
                     </div>
                     
                     <div class="search-box-wrapper">
+                        <span class="search-label">📊 AFD:</span>
+                        <div class="search-input-container">
+                            <input type="text" class="search-box afd-search" placeholder="Zoek in AFD datacatalogus..." id="afdSearchInput">
+                            <div class="search-suggestions" id="afdSuggestions"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="search-box-wrapper">
                         <span class="search-label">🌐 Google:</span>
                         <div class="search-input-container">
                             <input type="text" class="search-box google-search" placeholder="Zoek op Google..." id="googleSearchInput">
@@ -1016,6 +1048,7 @@
         // Search timeouts
         let intranetSearchTimeout = null;
         let googleSearchTimeout = null;
+        let afdSearchTimeout = null;
 
         // Default data
         const defaultSections = [
@@ -1838,6 +1871,42 @@
             document.getElementById('googleSuggestions').style.display = 'none';
         }
 
+        // AFD search functions
+        function showAFDSuggestions(query) {
+            const suggestions = [
+                { text: `Direct zoeken: "${query}"`, type: 'AFD Zoeken', icon: '🔍', action: 'search' },
+                { text: `${query} in regelgeving`, type: 'Regelgeving', icon: '📋', action: 'filter', filter: 'regelgeving' },
+                { text: `${query} in standaarden`, type: 'Standaarden', icon: '📏', action: 'filter', filter: 'standaard' },
+                { text: `${query} in documentatie`, type: 'Docs', icon: '📄', action: 'filter', filter: 'documentatie' },
+                { text: `Open AFD tool`, type: 'Ga naar AFD', icon: '🚀', action: 'open' }
+            ];
+            
+            const suggestionsContainer = document.getElementById('afdSuggestions');
+            suggestionsContainer.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const suggestionElement = document.createElement('div');
+                suggestionElement.className = 'search-suggestion';
+                suggestionElement.innerHTML = `
+                    <span class="suggestion-icon">${suggestion.icon}</span>
+                    <span class="suggestion-text">${suggestion.text}</span>
+                    <span class="suggestion-type">${suggestion.type}</span>
+                `;
+                
+                suggestionElement.addEventListener('click', function() {
+                    performAFDSearch(query, suggestion.action, suggestion.filter);
+                });
+                
+                suggestionsContainer.appendChild(suggestionElement);
+            });
+            
+            suggestionsContainer.style.display = 'block';
+        }
+
+        function hideAFDSuggestions() {
+            document.getElementById('afdSuggestions').style.display = 'none';
+        }
+
         function performGoogleSearch(query) {
             const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
             window.open(googleUrl, '_blank');
@@ -2137,6 +2206,23 @@
                 }, 200);
             });
 
+            // AFD search
+            document.getElementById('afdSearchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                
+                if (afdSearchTimeout) {
+                    clearTimeout(afdSearchTimeout);
+                }
+                
+                if (searchTerm.length > 0) {
+                    afdSearchTimeout = setTimeout(() => {
+                        showAFDSuggestions(searchTerm);
+                    }, 300);
+                } else {
+                    hideAFDSuggestions();
+                }
+            });
+
             // Google search
             document.getElementById('googleSearchInput').addEventListener('input', function(e) {
                 const searchTerm = e.target.value.toLowerCase().trim();
@@ -2151,6 +2237,16 @@
                     }, 300);
                 } else {
                     hideGoogleSuggestions();
+                }
+            });
+
+            // Handle Enter key for AFD search
+            document.getElementById('afdSearchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = e.target.value.trim();
+                    if (searchTerm) {
+                        performAFDSearch(searchTerm);
+                    }
                 }
             });
 
@@ -2178,6 +2274,9 @@
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('#intranetSearchInput') && !e.target.closest('#intranetSuggestions')) {
                     hideIntranetSuggestions();
+                }
+                if (!e.target.closest('#afdSearchInput') && !e.target.closest('#afdSuggestions')) {
+                    hideAFDSuggestions();
                 }
                 if (!e.target.closest('#googleSearchInput') && !e.target.closest('#googleSuggestions')) {
                     hideGoogleSuggestions();
