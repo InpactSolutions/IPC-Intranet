@@ -1874,6 +1874,9 @@
             
             linkElement.addEventListener('drop', function(e) {
                 console.log('Drop event fired on link:', linkElement.dataset.linkId);
+                console.log('Current draggedType:', draggedType);
+                console.log('Current draggedElement:', draggedElement);
+                console.log('Link element equals draggedElement:', linkElement === draggedElement);
                 
                 if (draggedType === 'link' && linkElement !== draggedElement && draggedElement) {
                     e.preventDefault();
@@ -1889,13 +1892,19 @@
                     const targetIndex = links.findIndex(l => l.id === targetLinkId);
                     
                     console.log('Found indices:', draggedIndex, targetIndex);
+                    console.log('Links array length:', links.length);
                     
                     if (draggedIndex !== -1 && targetIndex !== -1) {
+                        console.log('Before swap - dragged link:', links[draggedIndex]);
+                        console.log('Before swap - target link:', links[targetIndex]);
+                        
                         // Simple swap - temporarily store one link
                         const tempLink = links[draggedIndex];
                         links[draggedIndex] = links[targetIndex];
                         links[targetIndex] = tempLink;
                         
+                        console.log('After swap - dragged link:', links[draggedIndex]);
+                        console.log('After swap - target link:', links[targetIndex]);
                         console.log('Links swapped successfully');
                         
                         saveToStorage();
@@ -1903,7 +1912,14 @@
                         showNotification('Links verwisseld!');
                     } else {
                         console.error('Could not find link indices');
+                        console.error('Dragged ID:', draggedLinkId, 'Index:', draggedIndex);
+                        console.error('Target ID:', targetLinkId, 'Index:', targetIndex);
                     }
+                } else {
+                    console.log('Drop conditions not met:');
+                    console.log('- draggedType === "link":', draggedType === 'link');
+                    console.log('- linkElement !== draggedElement:', linkElement !== draggedElement);
+                    console.log('- draggedElement exists:', !!draggedElement);
                 }
                 linkElement.classList.remove('drag-over');
             });
