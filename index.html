@@ -1466,15 +1466,22 @@
                 grid.insertAdjacentHTML('beforeend', sectionHTML);
             });
             
+            console.log('🔗 Adding links to sections...');
             // Add links to their sections
             links.forEach(link => {
                 addLinkToDOM(link);
             });
             
+            console.log('🎯 Links added, now checking admin mode...');
             // Add drag and drop event listeners
             if (isAdminMode) {
                 console.log('👆 Admin mode is active, setting up drag and drop...');
-                setupDragAndDrop();
+                console.log('🔍 Checking if setupDragAndDrop function exists:', typeof setupDragAndDrop);
+                try {
+                    setupDragAndDrop();
+                } catch (error) {
+                    console.error('❌ Error calling setupDragAndDrop:', error);
+                }
             } else {
                 console.log('👀 Normal mode - no drag and drop setup');
             }
