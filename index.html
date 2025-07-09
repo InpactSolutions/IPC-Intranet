@@ -1898,12 +1898,11 @@
         // Google search functions
         function showGoogleSuggestions(query) {
             const suggestions = [
-                { text: query, type: 'Zoeken', icon: '🔍' },
-                { text: `${query} site:github.com`, type: 'GitHub', icon: '💻' },
-                { text: `${query} site:stackoverflow.com`, type: 'Stack Overflow', icon: '❓' },
-                { text: `${query} site:youtube.com`, type: 'YouTube', icon: '🎥' },
-                { text: `${query} site:linkedin.com`, type: 'LinkedIn', icon: '💼' },
-                { text: `${query} filetype:pdf`, type: 'PDF', icon: '📄' }
+                { text: query, type: 'Google', icon: '🔍', action: 'search' },
+                { text: `"${query}"`, type: 'Exacte match', icon: '🎯', action: 'exact' },
+                { text: `${query} -site:stackoverflow.com`, type: 'Exclusief SO', icon: '🚫', action: 'exclude' },
+                { text: `${query} filetype:pdf`, type: 'PDF bestanden', icon: '📄', action: 'filetype', filetype: 'pdf' },
+                { text: `${query} site:github.com`, type: 'GitHub', icon: '💻', action: 'site', site: 'github.com' }
             ];
             
             const suggestionsContainer = document.getElementById('googleSuggestions');
