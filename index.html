@@ -12,136 +12,288 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
             padding: 20px;
         }
 
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
         header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px 30px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            color: #2c3e50;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 600;
+        .header-left h1 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
 
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 1.2em;
+        .header-left .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
         }
 
         .search-container {
-            margin: 20px 0;
             position: relative;
+            width: 320px;
         }
 
         .search-box {
             width: 100%;
-            padding: 15px 20px;
+            padding: 12px 16px;
             border: none;
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 16px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
+        }
+
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .search-box:focus {
             outline: none;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
-        .grid {
+        .main-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
 
         .section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
-        .section h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.5em;
+        .section-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .section-icon {
-            width: 24px;
-            height: 24px;
-            fill: #3498db;
+            width: 20px;
+            height: 20px;
+            fill: white;
+            margin-right: 12px;
         }
 
-        .link-grid {
+        .section-title {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .section-controls {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: none;
+            gap: 6px;
+        }
+
+        .edit-mode .section-controls {
+            display: flex;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: white;
+            font-size: 12px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .links-grid {
             display: grid;
-            gap: 12px;
+            gap: 8px;
         }
 
         .link-item {
             display: flex;
             align-items: center;
-            padding: 12px 15px;
-            background: #f8f9fa;
-            border-radius: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
             text-decoration: none;
-            color: #2c3e50;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
+            color: white;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .link-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-            border-left-color: #3498db;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(4px);
+        }
+
+        .link-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #4facfe, #00f2fe);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .link-item:hover::before {
+            opacity: 1;
         }
 
         .link-icon {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
+            fill: rgba(255, 255, 255, 0.7);
             margin-right: 12px;
-            fill: #3498db;
+            flex-shrink: 0;
+        }
+
+        .link-content {
+            flex: 1;
+            min-width: 0;
         }
 
         .link-title {
             font-weight: 500;
+            font-size: 14px;
             margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .link-description {
-            font-size: 0.9em;
-            color: #7f8c8d;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .link-controls {
+            display: none;
+            gap: 4px;
+            margin-left: 8px;
+        }
+
+        .edit-mode .link-item:hover .link-controls {
+            display: flex;
+        }
+
+        .link-control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 4px;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .link-control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tags-container {
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-toggle.active {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: rgba(46, 204, 113, 0.4);
         }
 
         .admin-bar {
@@ -149,14 +301,15 @@
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(45deg, #2c3e50, #34495e);
+            background: rgba(20, 30, 48, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             transform: translateY(-100%);
             transition: transform 0.3s ease;
         }
@@ -165,203 +318,63 @@
             transform: translateY(0);
         }
 
-        .admin-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 1001;
-            transition: all 0.3s ease;
-        }
-
-        .admin-toggle:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .admin-toggle.active {
-            background: #27ae60;
-        }
-
         .admin-controls {
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
 
         .admin-btn {
-            background: #3498db;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            border: none;
             padding: 8px 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            font-size: 13px;
+            transition: all 0.2s ease;
         }
 
         .admin-btn:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .admin-btn.danger {
-            background: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+            border-color: rgba(231, 76, 60, 0.4);
         }
 
         .admin-btn.danger:hover {
-            background: #c0392b;
-        }
-
-        .admin-btn.success {
-            background: #27ae60;
-        }
-
-        .admin-btn.success:hover {
-            background: #229954;
-        }
-
-        .quick-actions {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            background: rgba(231, 76, 60, 0.3);
         }
 
         .fab {
-            background: linear-gradient(45deg, #3498db, #2980b9);
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
+            border-radius: 16px;
+            width: 56px;
+            height: 56px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 300;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
             transition: all 0.3s ease;
         }
 
         .fab:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
         .fab.secondary {
-            background: linear-gradient(45deg, #9b59b6, #8e44ad);
-            font-size: 20px;
-        }
-
-        .edit-mode .section {
-            position: relative;
-            border: 2px dashed transparent;
-            transition: all 0.3s ease;
-        }
-
-        .edit-mode .section:hover {
-            border-color: #3498db;
-        }
-
-        .section-controls {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: none;
-            gap: 8px;
-        }
-
-        .edit-mode .section-controls {
-            display: flex;
-        }
-
-        .control-btn {
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 4px;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .control-btn:hover {
-            background: white;
-            transform: scale(1.1);
-        }
-
-        .control-btn.edit {
-            color: #3498db;
-        }
-
-        .control-btn.delete {
-            color: #e74c3c;
-        }
-
-        .link-controls {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            display: none;
-            gap: 4px;
-        }
-
-        .edit-mode .link-item {
-            position: relative;
-            padding-right: 70px;
-        }
-
-        .edit-mode .link-item:hover .link-controls {
-            display: flex;
-        }
-
-        .link-control-btn {
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 3px;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .link-control-btn:hover {
-            background: white;
-            transform: scale(1.1);
-        }
-
-        .body-offset {
-            padding-top: 60px;
-        }
-
-        .add-form {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            z-index: 1001;
-            width: 90%;
-            max-width: 500px;
+            bottom: 92px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
         .overlay {
@@ -372,7 +385,31 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
             z-index: 1000;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            color: #2c3e50;
+            margin-bottom: 24px;
+            font-size: 1.5rem;
         }
 
         .form-group {
@@ -381,9 +418,10 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 500;
             color: #2c3e50;
+            font-size: 14px;
         }
 
         .form-group input,
@@ -392,7 +430,7 @@
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             transition: border-color 0.3s ease;
         }
@@ -401,343 +439,197 @@
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #3498db;
+            border-color: #667eea;
         }
 
         .form-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: flex-end;
+            margin-top: 24px;
         }
 
         .btn {
             padding: 12px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            font-size: 14px;
         }
 
         .btn-primary {
-            background: #3498db;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
         .btn-primary:hover {
-            background: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         .btn-secondary {
-            background: #95a5a6;
-            color: white;
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #e9ecef;
         }
 
         .btn-secondary:hover {
-            background: #7f8c8d;
+            background: #e9ecef;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(46, 204, 113, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            z-index: 1002;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .drag-handle {
+            cursor: move;
+            color: rgba(255, 255, 255, 0.5);
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .drag-handle:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .edit-mode .section {
+            border: 2px dashed transparent;
+        }
+
+        .edit-mode .section:hover {
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
+        /* Responsive design */
         @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .container {
+            body {
                 padding: 10px;
             }
-            
-            h1 {
-                font-size: 2em;
+
+            header {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px 20px;
             }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .section {
+                padding: 16px;
+            }
+
+            .header-left h1 {
+                font-size: 1.5rem;
+            }
+
+            .admin-bar {
+                flex-direction: column;
+                gap: 12px;
+                padding: 16px;
+            }
+
+            .admin-controls {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .modal {
+                width: 95%;
+                padding: 24px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
 <body>
-    <div class="admin-toggle" onclick="toggleAdmin()">⚙️</div>
+    <div class="admin-toggle" onclick="toggleAdmin()">
+        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+        </svg>
+    </div>
     
     <div class="admin-bar" id="adminBar">
         <div>
             <strong>🔧 Beheer Modus</strong>
-            <span style="margin-left: 20px; font-size: 14px;">Klik op secties en links om ze te bewerken</span>
+            <span style="margin-left: 20px; font-size: 13px; opacity: 0.8;">Klik op secties en links om ze te bewerken</span>
         </div>
         <div class="admin-controls">
-            <button class="admin-btn" onclick="exportData()">📤 Export Data</button>
-            <button class="admin-btn" onclick="importData()">📥 Import Data</button>
-            <button class="admin-btn danger" onclick="clearAllData()">🗑️ Alles wissen</button>
+            <button class="admin-btn" onclick="exportData()">📤 Export</button>
+            <button class="admin-btn" onclick="importData()">📥 Import</button>
+            <button class="admin-btn danger" onclick="clearAllData()">🗑️ Reset</button>
         </div>
     </div>
 
-    <div class="container" id="mainContainer">
+    <div class="container">
         <header>
-        <header>
-            <h1>IPC Team Intranet</h1>
-            <p class="subtitle">Centrale hub voor tools, links en informatie</p>
-            
+            <div class="header-left">
+                <h1>IPC Team Intranet</h1>
+                <p class="subtitle">Centrale hub voor tools, links en informatie</p>
+            </div>
             <div class="search-container">
                 <input type="text" class="search-box" placeholder="Zoek naar tools, links of informatie..." id="searchInput">
             </div>
         </header>
 
-        <div class="grid" id="sectionsGrid">
-            <div class="section" data-category="tools">
-                <div class="section-controls">
-                    <button class="control-btn edit" onclick="editSection(this)" title="Bewerk sectie">✏️</button>
-                    <button class="control-btn delete" onclick="deleteSection(this)" title="Verwijder sectie">🗑️</button>
-                </div>
-                <h2>
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
-                    </svg>
-                    Development Tools
-                </h2>
-                <div class="link-grid">
-                    <a href="#" class="link-item" data-link-id="1">
-                        <div class="link-controls">
-                            <button class="link-control-btn edit" onclick="editLink(this)" title="Bewerk link">✏️</button>
-                            <button class="link-control-btn delete" onclick="deleteLink(this)" title="Verwijder link">🗑️</button>
-                        </div>
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Jira</div>
-                            <div class="link-description">Issue tracking en projectmanagement</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item" data-link-id="2">
-                        <div class="link-controls">
-                            <button class="link-control-btn edit" onclick="editLink(this)" title="Bewerk link">✏️</button>
-                            <button class="link-control-btn delete" onclick="deleteLink(this)" title="Verwijder link">🗑️</button>
-                        </div>
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">GitLab</div>
-                            <div class="link-description">Code repository en CI/CD</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item" data-link-id="3">
-                        <div class="link-controls">
-                            <button class="link-control-btn edit" onclick="editLink(this)" title="Bewerk link">✏️</button>
-                            <button class="link-control-btn delete" onclick="deleteLink(this)" title="Verwijder link">🗑️</button>
-                        </div>
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">SonarQube</div>
-                            <div class="link-description">Code quality en security analysis</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="section" data-category="monitoring">
-                <h2>
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-                    </svg>
-                    Monitoring & Analytics
-                </h2>
-                <div class="link-grid">
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Grafana</div>
-                            <div class="link-description">Dashboards en visualisaties</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Prometheus</div>
-                            <div class="link-description">Metrics en alerting</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">ELK Stack</div>
-                            <div class="link-description">Logging en log analysis</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="section" data-category="communication">
-                <h2>
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                    </svg>
-                    Communicatie
-                </h2>
-                <div class="link-grid">
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Slack</div>
-                            <div class="link-description">Team communicatie</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Teams</div>
-                            <div class="link-description">Video calls en samenwerking</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Confluence</div>
-                            <div class="link-description">Wiki en documentatie</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="section" data-category="documentation">
-                <h2>
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                    </svg>
-                    Documentatie
-                </h2>
-                <div class="link-grid">
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">API Documentatie</div>
-                            <div class="link-description">Swagger/OpenAPI specs</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Architectuur Docs</div>
-                            <div class="link-description">System design en architectuur</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Runbooks</div>
-                            <div class="link-description">Operationele procedures</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="section" data-category="infrastructure">
-                <h2>
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                    Infrastructure
-                </h2>
-                <div class="link-grid">
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Kubernetes Dashboard</div>
-                            <div class="link-description">Container orchestration</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Terraform Cloud</div>
-                            <div class="link-description">Infrastructure as Code</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">AWS Console</div>
-                            <div class="link-description">Cloud services management</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="section" data-category="security">
-                <h2>
-                    <svg class="section-icon" viewBox="0 0 24 24">
-                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
-                    </svg>
-                    Security
-                </h2>
-                <div class="link-grid">
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Vault</div>
-                            <div class="link-description">Secrets management</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">SIEM Dashboard</div>
-                            <div class="link-description">Security monitoring</div>
-                        </div>
-                    </a>
-                    <a href="#" class="link-item">
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">Certificate Manager</div>
-                            <div class="link-description">SSL/TLS certificaten</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
+        <div class="main-grid" id="mainGrid">
+            <!-- Sections will be dynamically loaded here -->
         </div>
     </div>
 
-    <div class="quick-actions">
-        <button class="fab secondary" onclick="openSectionForm()" title="Nieuwe sectie toevoegen">📁</button>
-        <button class="fab" onclick="openAddForm()" title="Nieuwe link toevoegen">+</button>
-    </div>
+    <button class="fab secondary" onclick="openSectionForm()" title="Nieuwe sectie">📁</button>
+    <button class="fab" onclick="openAddForm()" title="Nieuwe link">+</button>
 
-    <div class="overlay" id="overlay" onclick="closeAddForm()"></div>
+    <div class="overlay" id="overlay" onclick="closeModals()"></div>
 
-    <div class="add-form" id="addForm">
-        <h2 style="margin-bottom: 20px; color: #2c3e50;">Nieuwe link toevoegen</h2>
+    <div class="modal" id="addModal">
+        <h2>Nieuwe link toevoegen</h2>
         <form id="linkForm">
             <div class="form-group">
                 <label for="linkTitle">Titel:</label>
@@ -752,21 +644,25 @@
                 <textarea id="linkDescription" name="description" rows="3"></textarea>
             </div>
             <div class="form-group">
+                <label for="linkTags">Tags (gescheiden door komma's):</label>
+                <input type="text" id="linkTags" name="tags" placeholder="bijv: jira, project, board">
+            </div>
+            <div class="form-group">
                 <label for="linkCategory">Categorie:</label>
                 <select id="linkCategory" name="category" required>
                     <option value="">Selecteer categorie</option>
                 </select>
             </div>
             <div class="form-buttons">
-                <button type="button" class="btn btn-secondary" onclick="closeAddForm()">Annuleren</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModals()">Annuleren</button>
                 <button type="submit" class="btn btn-primary">Toevoegen</button>
             </div>
         </form>
     </div>
 
-    <div class="add-form" id="sectionForm">
-        <h2 style="margin-bottom: 20px; color: #2c3e50;">Nieuwe sectie toevoegen</h2>
-        <form id="sectionFormElement">
+    <div class="modal" id="sectionModal">
+        <h2>Nieuwe sectie toevoegen</h2>
+        <form id="sectionForm">
             <div class="form-group">
                 <label for="sectionTitle">Sectie titel:</label>
                 <input type="text" id="sectionTitle" name="title" required>
@@ -780,25 +676,25 @@
                 <textarea id="sectionIcon" name="icon" rows="3" placeholder="SVG path voor het icoon"></textarea>
             </div>
             <div class="form-buttons">
-                <button type="button" class="btn btn-secondary" onclick="closeSectionForm()">Annuleren</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModals()">Annuleren</button>
                 <button type="submit" class="btn btn-primary">Toevoegen</button>
             </div>
         </form>
     </div>
 
-    <div class="add-form" id="editForm">
-        <h2 style="margin-bottom: 20px; color: #2c3e50;">Bewerken</h2>
-        <form id="editFormElement">
+    <div class="modal" id="editModal">
+        <h2>Bewerken</h2>
+        <form id="editForm">
             <div id="editFormContent"></div>
             <div class="form-buttons">
-                <button type="button" class="btn btn-secondary" onclick="closeEditForm()">Annuleren</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModals()">Annuleren</button>
                 <button type="submit" class="btn btn-primary">Opslaan</button>
             </div>
         </form>
     </div>
 
     <script>
-        // Data storage with localStorage
+        // Data storage
         let links = [];
         let sections = [];
         let isAdminMode = false;
@@ -808,53 +704,51 @@
 
         // Default data
         const defaultSections = [
-            { id: 'tools', title: 'Development Tools', icon: 'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z' },
-            { id: 'monitoring', title: 'Monitoring & Analytics', icon: 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z' },
-            { id: 'communication', title: 'Communicatie', icon: 'M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z' },
-            { id: 'documentation', title: 'Documentatie', icon: 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z' },
-            { id: 'infrastructure', title: 'Infrastructure', icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' },
-            { id: 'security', title: 'Security', icon: 'M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V18H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z' }
+            { id: 'tools', title: 'Jira', icon: 'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z' },
+            { id: 'monitoring', title: 'AFD', icon: 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z' },
+            { id: 'pe-beheer', title: 'PE Beheer', icon: 'M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z' },
+            { id: 'documentation', title: 'GPT', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' },
+            { id: 'infrastructure', title: 'Tools', icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' }
         ];
 
         const defaultLinks = [
-            { id: 1, title: 'Jira', url: 'https://jira.example.com', description: 'Issue tracking en projectmanagement', category: 'tools' },
-            { id: 2, title: 'GitLab', url: 'https://gitlab.example.com', description: 'Code repository en CI/CD', category: 'tools' },
-            { id: 3, title: 'SonarQube', url: 'https://sonar.example.com', description: 'Code quality en security analysis', category: 'tools' },
-            { id: 4, title: 'Grafana', url: 'https://grafana.example.com', description: 'Dashboards en visualisaties', category: 'monitoring' },
-            { id: 5, title: 'Prometheus', url: 'https://prometheus.example.com', description: 'Metrics en alerting', category: 'monitoring' },
-            { id: 6, title: 'Slack', url: 'https://slack.example.com', description: 'Team communicatie', category: 'communication' },
-            { id: 7, title: 'Teams', url: 'https://teams.example.com', description: 'Video calls en samenwerking', category: 'communication' },
-            { id: 8, title: 'API Documentatie', url: 'https://api-docs.example.com', description: 'Swagger/OpenAPI specs', category: 'documentation' },
-            { id: 9, title: 'Kubernetes Dashboard', url: 'https://k8s.example.com', description: 'Container orchestration', category: 'infrastructure' },
-            { id: 10, title: 'Vault', url: 'https://vault.example.com', description: 'Secrets management', category: 'security' }
+            { id: 2, title: 'IPC Board', url: 'https://awisoftware.atlassian.net/jira/software/c/projects/PE/boards/94', description: 'Project board', category: 'tools', tags: ['jira', 'board', 'project'] },
+            { id: 3, title: 'IPC Servicedesk', url: 'https://awisoftware.atlassian.net/jira/servicedesk/projects/IPC/boards/107', description: 'Support tickets', category: 'tools', tags: ['jira', 'servicedesk', 'tickets'] },
+            { id: 4, title: 'AFD 1.0 zoektool', url: 'https://inpactsolutions.github.io/afd-datacatalogus/', description: 'Inpact AFD zoektool', category: 'monitoring', tags: ['afd', 'zoeken', 'datacatalogus'] },
+            { id: 5, title: 'AOS', url: 'https://portal.sivi.org/', description: 'AFD Online Samenstellen', category: 'monitoring', tags: ['aos', 'sivi', 'online'] },
+            { id: 6, title: 'DEV', url: 'https://apetariffeditor.awisoftware.nl/', description: 'Development omgeving', category: 'pe-beheer', tags: ['dev', 'development', 'tariff'] },
+            { id: 7, title: 'ACC', url: 'https://ipc-tariffeditor-acc.awisoftware.nl/', description: 'Acceptatie omgeving', category: 'pe-beheer', tags: ['acc', 'acceptance', 'tariff'] },
+            { id: 8, title: 'Productanalyse', url: 'https://chatgpt.com/g/g-683407fd9f688191b4f3763225b3a133-productanalyse-ipc-inpact', description: 'AI assistant', category: 'documentation', tags: ['gpt', 'productanalyse', 'ai'] },
+            { id: 9, title: 'PET Web', url: 'https://ipc-forms.awisoftware.nl/', description: 'Product engine test tool', category: 'infrastructure', tags: ['pet', 'forms', 'testing'] },
+            { id: 11, title: 'AFD 1.0 Online (SIVI)', url: 'https://www.sivi.org/sivi-afs/online-diensten/afd-1-0-online-raadplegen/', description: 'SIVI AFD online', category: 'monitoring', tags: ['afd', 'sivi', 'online'] },
+            { id: 12, title: 'Interne Confluence', url: 'https://awisoftware.atlassian.net/wiki/spaces/PE/overview', description: 'Interne wiki', category: 'tools', tags: ['confluence', 'wiki', 'intern'] },
+            { id: 13, title: 'Openbare Confluence', url: 'https://awisoftware.atlassian.net/wiki/spaces/IK1/overview', description: 'Openbare wiki', category: 'tools', tags: ['confluence', 'wiki', 'openbaar'] },
+            { id: 14, title: 'PRD', url: 'https://ipc-tariffeditor-prd.awisoftware.nl/', description: 'Productie omgeving', category: 'pe-beheer', tags: ['prd', 'production', 'tariff'] },
+            { id: 15, title: 'Transscript', url: 'https://chatgpt.com/g/g-6853ba18f4ec81919b75ed778aff8d26-transcript-vertaler-naar-samenvatting-actiepunten', description: 'Transcript vertaler', category: 'documentation', tags: ['gpt', 'transcript', 'samenvatting'] }
         ];
 
-        // LocalStorage helpers
-        function saveToLocalStorage() {
-            try {
-                const data = {
-                    sections: sections,
-                    links: links,
-                    linkIdCounter: linkIdCounter
-                };
-                localStorage.setItem('ipc-intranet-data', JSON.stringify(data));
-            } catch (error) {
-                console.error('Error saving to localStorage:', error);
-            }
+        // Storage helpers
+        function saveToStorage() {
+            const data = {
+                sections: sections,
+                links: links,
+                linkIdCounter: linkIdCounter
+            };
+            localStorage.setItem('ipc-intranet-data', JSON.stringify(data));
         }
 
-        function loadFromLocalStorage() {
+        function loadFromStorage() {
             try {
                 const savedData = localStorage.getItem('ipc-intranet-data');
                 if (savedData) {
                     const data = JSON.parse(savedData);
                     sections = data.sections || defaultSections;
                     links = data.links || defaultLinks;
-                    linkIdCounter = data.linkIdCounter || 11;
+                    linkIdCounter = data.linkIdCounter || 16;
                     return true;
                 }
             } catch (error) {
-                console.error('Error loading from localStorage:', error);
+                console.error('Error loading from storage:', error);
             }
             return false;
         }
@@ -862,49 +756,54 @@
         function resetToDefaults() {
             sections = [...defaultSections];
             links = [...defaultLinks];
-            linkIdCounter = 11;
-            saveToLocalStorage();
+            linkIdCounter = 16;
+            saveToStorage();
         }
 
-        // Admin mode toggle
+        // Admin mode
         function toggleAdmin() {
             isAdminMode = !isAdminMode;
             const adminBar = document.getElementById('adminBar');
             const adminToggle = document.querySelector('.admin-toggle');
-            const mainContainer = document.getElementById('mainContainer');
             
             if (isAdminMode) {
                 adminBar.classList.add('active');
                 adminToggle.classList.add('active');
-                mainContainer.classList.add('body-offset');
                 document.body.classList.add('edit-mode');
             } else {
                 adminBar.classList.remove('active');
                 adminToggle.classList.remove('active');
-                mainContainer.classList.remove('body-offset');
                 document.body.classList.remove('edit-mode');
             }
         }
 
-        // Section management
+        // Modal management
+        function openAddForm() {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('addModal').style.display = 'block';
+        }
+
         function openSectionForm() {
             document.getElementById('overlay').style.display = 'block';
-            document.getElementById('sectionForm').style.display = 'block';
+            document.getElementById('sectionModal').style.display = 'block';
         }
 
-        function closeSectionForm() {
+        function closeModals() {
             document.getElementById('overlay').style.display = 'none';
-            document.getElementById('sectionForm').style.display = 'none';
-            document.getElementById('sectionFormElement').reset();
+            document.getElementById('addModal').style.display = 'none';
+            document.getElementById('sectionModal').style.display = 'none';
+            document.getElementById('editModal').style.display = 'none';
+            
+            // Reset forms
+            document.getElementById('linkForm').reset();
+            document.getElementById('sectionForm').reset();
+            document.getElementById('editForm').reset();
+            
+            editingItem = null;
+            editingType = null;
         }
 
-        function addSection(sectionData) {
-            sections.push(sectionData);
-            saveToLocalStorage();
-            renderSections();
-            updateCategoryOptions();
-        }
-
+        // CRUD operations
         function editSection(button) {
             if (!isAdminMode) return;
             
@@ -933,48 +832,34 @@
             `;
             
             document.getElementById('overlay').style.display = 'block';
-            document.getElementById('editForm').style.display = 'block';
+            document.getElementById('editModal').style.display = 'block';
         }
 
         function deleteSection(button) {
             if (!isAdminMode) return;
             
-            if (confirm('Weet je zeker dat je deze sectie wilt verwijderen? Alle links in deze sectie worden ook verwijderd.')) {
+            if (confirm('Weet je zeker dat je deze sectie wilt verwijderen?')) {
                 const section = button.closest('.section');
                 const category = section.dataset.category;
                 
-                // Remove from sections array
                 sections = sections.filter(s => s.id !== category);
-                
-                // Remove links from this category
                 links = links.filter(l => l.category !== category);
                 
-                // Save and refresh
-                saveToLocalStorage();
+                saveToStorage();
                 renderSections();
                 updateCategoryOptions();
-                
                 showNotification('Sectie verwijderd!');
             }
         }
 
-        // Link management
         function editLink(button) {
             if (!isAdminMode) return;
             
             const linkItem = button.closest('.link-item');
-            const linkId = linkItem.dataset.linkId;
-            const linkData = links.find(l => l.id == linkId);
+            const linkId = parseInt(linkItem.dataset.linkId);
+            const linkData = links.find(l => l.id === linkId);
             
-            if (!linkData) {
-                // Extract data from DOM if not in links array
-                const title = linkItem.querySelector('.link-title').textContent;
-                const description = linkItem.querySelector('.link-description').textContent;
-                const url = linkItem.href;
-                const category = linkItem.closest('.section').dataset.category;
-                
-                linkData = { id: linkId, title, description, url, category };
-            }
+            if (!linkData) return;
             
             editingItem = linkItem;
             editingType = 'link';
@@ -993,6 +878,10 @@
                     <textarea id="editLinkDescription" name="description" rows="3">${linkData.description}</textarea>
                 </div>
                 <div class="form-group">
+                    <label for="editLinkTags">Tags (gescheiden door komma's):</label>
+                    <input type="text" id="editLinkTags" name="tags" value="${linkData.tags ? linkData.tags.join(', ') : ''}" placeholder="bijv: jira, project, board">
+                </div>
+                <div class="form-group">
                     <label for="editLinkCategory">Categorie:</label>
                     <select id="editLinkCategory" name="category" required>
                         ${sections.map(s => `<option value="${s.id}" ${s.id === linkData.category ? 'selected' : ''}>${s.title}</option>`).join('')}
@@ -1001,7 +890,7 @@
             `;
             
             document.getElementById('overlay').style.display = 'block';
-            document.getElementById('editForm').style.display = 'block';
+            document.getElementById('editModal').style.display = 'block';
         }
 
         function deleteLink(button) {
@@ -1011,31 +900,16 @@
                 const linkItem = button.closest('.link-item');
                 const linkId = parseInt(linkItem.dataset.linkId);
                 
-                // Remove from links array
                 links = links.filter(l => l.id !== linkId);
-                
-                // Save and refresh
-                saveToLocalStorage();
+                saveToStorage();
                 renderSections();
-                
                 showNotification('Link verwijderd!');
             }
         }
 
-        function closeEditForm() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('editForm').style.display = 'none';
-            document.getElementById('editFormElement').reset();
-            editingItem = null;
-            editingType = null;
-        }
-
         // Data management
         function exportData() {
-            const data = {
-                sections: sections,
-                links: links
-            };
+            const data = { sections: sections, links: links };
             const dataStr = JSON.stringify(data, null, 2);
             const dataBlob = new Blob([dataStr], {type: 'application/json'});
             const url = URL.createObjectURL(dataBlob);
@@ -1061,16 +935,15 @@
                             if (data.sections && data.links) {
                                 sections = data.sections;
                                 links = data.links;
-                                linkIdCounter = data.linkIdCounter || Math.max(...links.map(l => l.id)) + 1;
-                                saveToLocalStorage();
+                                saveToStorage();
                                 renderSections();
                                 updateCategoryOptions();
-                                showNotification('Data succesvol geïmporteerd!');
+                                showNotification('Data geïmporteerd!');
                             } else {
-                                alert('Ongeldig bestandsformaat. Verwacht JSON met sections en links.');
+                                alert('Ongeldig bestandsformaat');
                             }
                         } catch (error) {
-                            alert('Fout bij het laden van het bestand: ' + error.message);
+                            alert('Fout bij het laden: ' + error.message);
                         }
                     };
                     reader.readAsText(file);
@@ -1080,45 +953,68 @@
         }
 
         function clearAllData() {
-            if (confirm('Weet je zeker dat je alle data wilt wissen? Deze actie kan niet ongedaan gemaakt worden.')) {
-                if (confirm('Dit zal alle aangepaste secties en links verwijderen. Weet je het zeker?')) {
-                    resetToDefaults();
-                    renderSections();
-                    updateCategoryOptions();
-                    showNotification('Alle data gewist en teruggezet naar standaard!');
-                }
+            if (confirm('Weet je zeker dat je alle data wilt wissen?')) {
+                resetToDefaults();
+                renderSections();
+                updateCategoryOptions();
+                showNotification('Data gereset!');
             }
         }
 
+        // Rendering
         function renderSections() {
-            const grid = document.getElementById('sectionsGrid');
+            const grid = document.getElementById('mainGrid');
             grid.innerHTML = '';
             
             sections.forEach(section => {
                 const sectionHTML = `
                     <div class="section" data-category="${section.id}">
                         <div class="section-controls">
-                            <button class="control-btn edit" onclick="editSection(this)" title="Bewerk sectie">✏️</button>
-                            <button class="control-btn delete" onclick="deleteSection(this)" title="Verwijder sectie">🗑️</button>
+                            <button class="control-btn" onclick="editSection(this)" title="Bewerk sectie">✏️</button>
+                            <button class="control-btn" onclick="deleteSection(this)" title="Verwijder sectie">🗑️</button>
                         </div>
-                        <h2>
+                        <div class="section-header">
                             <svg class="section-icon" viewBox="0 0 24 24">
                                 <path d="${section.icon}"/>
                             </svg>
-                            ${section.title}
-                        </h2>
-                        <div class="link-grid"></div>
+                            <h2 class="section-title">${section.title}</h2>
+                        </div>
+                        <div class="links-grid" id="links-${section.id}"></div>
                     </div>
                 `;
                 grid.insertAdjacentHTML('beforeend', sectionHTML);
             });
             
-            // Re-add links to their sections
+            // Add links to their sections
             links.forEach(link => {
                 addLinkToDOM(link);
             });
-            
-            updateCategoryOptions();
+        }
+
+        function addLinkToDOM(link) {
+            const linksGrid = document.getElementById(`links-${link.category}`);
+            if (linksGrid) {
+                const tagsHTML = link.tags && link.tags.length > 0 ? 
+                    `<div class="tags-container">${link.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : '';
+                
+                const linkHTML = `
+                    <a href="${link.url}" class="link-item" data-link-id="${link.id}" target="_blank">
+                        <svg class="link-icon" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div class="link-content">
+                            <div class="link-title">${link.title}</div>
+                            <div class="link-description">${link.description}</div>
+                            ${tagsHTML}
+                        </div>
+                        <div class="link-controls">
+                            <button class="link-control-btn" onclick="editLink(this)" title="Bewerk">✏️</button>
+                            <button class="link-control-btn" onclick="deleteLink(this)" title="Verwijder">🗑️</button>
+                        </div>
+                    </a>
+                `;
+                linksGrid.insertAdjacentHTML('beforeend', linkHTML);
+            }
         }
 
         function updateCategoryOptions() {
@@ -1139,10 +1035,14 @@
                 let hasVisibleItems = false;
                 
                 linkItems.forEach(item => {
+                    const linkId = parseInt(item.dataset.linkId);
+                    const linkData = links.find(l => l.id === linkId);
+                    
                     const title = item.querySelector('.link-title').textContent.toLowerCase();
                     const description = item.querySelector('.link-description').textContent.toLowerCase();
+                    const tags = linkData && linkData.tags ? linkData.tags.join(' ').toLowerCase() : '';
                     
-                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
                         item.style.display = 'flex';
                         hasVisibleItems = true;
                     } else {
@@ -1154,39 +1054,31 @@
             });
         });
 
-        // Form functionality
-        function openAddForm() {
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('addForm').style.display = 'block';
-        }
-
-        function closeAddForm() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('addForm').style.display = 'none';
-            document.getElementById('linkForm').reset();
-        }
-
         // Form submissions
         document.getElementById('linkForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const formData = new FormData(e.target);
+            const tagsInput = formData.get('tags');
+            const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+            
             const newLink = {
                 id: linkIdCounter++,
                 title: formData.get('title'),
                 url: formData.get('url'),
                 description: formData.get('description'),
-                category: formData.get('category')
+                category: formData.get('category'),
+                tags: tags
             };
             
             links.push(newLink);
-            saveToLocalStorage();
+            saveToStorage();
             renderSections();
-            closeAddForm();
-            showNotification('Link succesvol toegevoegd!');
+            closeModals();
+            showNotification('Link toegevoegd!');
         });
 
-        document.getElementById('sectionFormElement').addEventListener('submit', function(e) {
+        document.getElementById('sectionForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const formData = new FormData(e.target);
@@ -1196,18 +1088,20 @@
                 icon: formData.get('icon') || 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z'
             };
             
-            // Check if ID already exists
             if (sections.find(s => s.id === newSection.id)) {
-                alert('Een sectie met deze ID bestaat al. Kies een andere ID.');
+                alert('Een sectie met deze ID bestaat al');
                 return;
             }
             
-            addSection(newSection);
-            closeSectionForm();
-            showNotification('Sectie succesvol toegevoegd!');
+            sections.push(newSection);
+            saveToStorage();
+            renderSections();
+            updateCategoryOptions();
+            closeModals();
+            showNotification('Sectie toegevoegd!');
         });
 
-        document.getElementById('editFormElement').addEventListener('submit', function(e) {
+        document.getElementById('editForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const formData = new FormData(e.target);
@@ -1219,16 +1113,13 @@
                 if (sectionIndex !== -1) {
                     const oldId = sections[sectionIndex].id;
                     const newId = formData.get('id');
-                    const newTitle = formData.get('title');
-                    const newIcon = formData.get('icon');
                     
                     sections[sectionIndex] = {
                         id: newId,
-                        title: newTitle,
-                        icon: newIcon
+                        title: formData.get('title'),
+                        icon: formData.get('icon')
                     };
                     
-                    // Update links if section ID changed
                     if (oldId !== newId) {
                         links.forEach(link => {
                             if (link.category === oldId) {
@@ -1237,7 +1128,7 @@
                         });
                     }
                     
-                    saveToLocalStorage();
+                    saveToStorage();
                     renderSections();
                     updateCategoryOptions();
                     showNotification('Sectie bijgewerkt!');
@@ -1246,91 +1137,70 @@
                 const linkId = parseInt(editingItem.dataset.linkId);
                 const linkIndex = links.findIndex(l => l.id === linkId);
                 
+                const tagsInput = formData.get('tags');
+                const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+                
                 const updatedLink = {
                     id: linkId,
                     title: formData.get('title'),
                     url: formData.get('url'),
                     description: formData.get('description'),
-                    category: formData.get('category')
+                    category: formData.get('category'),
+                    tags: tags
                 };
                 
                 if (linkIndex !== -1) {
                     links[linkIndex] = updatedLink;
-                } else {
-                    links.push(updatedLink);
+                    saveToStorage();
+                    renderSections();
+                    showNotification('Link bijgewerkt!');
                 }
-                
-                saveToLocalStorage();
-                renderSections();
-                showNotification('Link bijgewerkt!');
             }
             
-            closeEditForm();
+            closeModals();
         });
 
-        function addLinkToDOM(link) {
-            const section = document.querySelector(`[data-category="${link.category}"]`);
-            if (section) {
-                const linkGrid = section.querySelector('.link-grid');
-                const linkHTML = `
-                    <a href="${link.url}" class="link-item" data-link-id="${link.id}" target="_blank">
-                        <div class="link-controls">
-                            <button class="link-control-btn edit" onclick="editLink(this)" title="Bewerk link">✏️</button>
-                            <button class="link-control-btn delete" onclick="deleteLink(this)" title="Verwijder link">🗑️</button>
-                        </div>
-                        <svg class="link-icon" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                        <div>
-                            <div class="link-title">${link.title}</div>
-                            <div class="link-description">${link.description}</div>
-                        </div>
-                    </a>
-                `;
-                linkGrid.insertAdjacentHTML('beforeend', linkHTML);
-            }
-        }
-
+        // Notification system
         function showNotification(message) {
             const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #27ae60;
-                color: white;
-                padding: 15px 25px;
-                border-radius: 8px;
-                z-index: 1002;
-                font-weight: 500;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            `;
+            notification.className = 'notification';
             notification.textContent = message;
             document.body.appendChild(notification);
             
+            setTimeout(() => notification.classList.add('show'), 100);
             setTimeout(() => {
-                notification.remove();
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Load data from localStorage or use defaults
-            if (!loadFromLocalStorage()) {
+            if (!loadFromStorage()) {
                 resetToDefaults();
             }
             
-            // Render the interface
+            // Ensure all links have tags
+            links.forEach(link => {
+                if (!link.tags) link.tags = [];
+            });
+            
             renderSections();
             updateCategoryOptions();
             
-            // Add click handlers to handle placeholder links
+            // Handle link clicks
             document.addEventListener('click', function(e) {
+                if (e.target.closest('.link-control-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+                
                 if (e.target.closest('.link-item')) {
                     const linkItem = e.target.closest('.link-item');
-                    if (!linkItem.href || linkItem.href === '#' || linkItem.href.includes('example.com')) {
+                    if (!linkItem.href || linkItem.href === '#') {
                         e.preventDefault();
-                        showNotification('Link nog niet geconfigureerd. Voeg de juiste URL toe via de beheerfunctie!');
+                        showNotification('Link nog niet geconfigureerd!');
                     }
                 }
             });
