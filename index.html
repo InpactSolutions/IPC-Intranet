@@ -134,20 +134,36 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
+            gap: 12px;
         }
 
         .search-container {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-box-wrapper {
             position: relative;
-            width: 320px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            font-weight: 500;
+            min-width: 60px;
+            text-align: right;
         }
 
         .search-input-container {
             position: relative;
-            margin-bottom: 8px;
         }
 
         .search-box {
-            width: 100%;
+            width: 240px;
             padding: 12px 16px;
             border: none;
             border-radius: 12px;
@@ -167,38 +183,25 @@
             outline: none;
             background: rgba(255, 255, 255, 0.25);
             border-color: rgba(255, 255, 255, 0.4);
+            width: 280px;
         }
 
-        .search-box.hidden {
-            display: none;
+        .search-box.google-search {
+            border-color: rgba(66, 133, 244, 0.5);
         }
 
-        .search-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
+        .search-box.google-search:focus {
+            border-color: rgba(66, 133, 244, 0.8);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
         }
 
-        .search-tab {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.7);
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s ease;
+        .search-box.intranet-search {
+            border-color: rgba(52, 168, 83, 0.5);
         }
 
-        .search-tab.active {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-
-        .search-tab:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
+        .search-box.intranet-search:focus {
+            border-color: rgba(52, 168, 83, 0.8);
+            box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.2);
         }
 
         .search-suggestions {
@@ -745,8 +748,16 @@
             }
             
             .search-container {
-                width: 100%;
-                max-width: 400px;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .search-box {
+                width: 280px;
+            }
+            
+            .search-box:focus {
+                width: 320px;
             }
         }
 
@@ -810,6 +821,16 @@
             .modal {
                 width: 95%;
                 padding: 24px;
+            }
+            
+            .search-box {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .search-box:focus {
+                width: 100%;
+                max-width: 350px;
             }
         }
 
@@ -883,20 +904,20 @@
             
             <div class="header-right">
                 <div class="search-container">
-                    <div class="search-tabs">
-                        <div class="search-tab active" data-search-type="internal">🔍 Intranet</div>
-                        <div class="search-tab" data-search-type="google">🌐 Google</div>
+                    <div class="search-box-wrapper">
+                        <span class="search-label">🔍 Intranet:</span>
+                        <div class="search-input-container">
+                            <input type="text" class="search-box intranet-search" placeholder="Zoek in links en tools..." id="intranetSearchInput">
+                            <div class="search-suggestions" id="intranetSuggestions"></div>
+                        </div>
                     </div>
                     
-                    <!-- Intranet search -->
-                    <div class="search-input-container">
-                        <input type="text" class="search-box" placeholder="Zoek naar tools, links of informatie..." id="intranetSearchInput">
-                    </div>
-                    
-                    <!-- Google search -->
-                    <div class="search-input-container">
-                        <input type="text" class="search-box hidden" placeholder="Zoek op Google..." id="googleSearchInput">
-                        <div class="search-suggestions" id="searchSuggestions"></div>
+                    <div class="search-box-wrapper">
+                        <span class="search-label">🌐 Google:</span>
+                        <div class="search-input-container">
+                            <input type="text" class="search-box google-search" placeholder="Zoek op Google..." id="googleSearchInput">
+                            <div class="search-suggestions" id="googleSuggestions"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -987,6 +1008,10 @@
         let linkIdCounter = 1;
         let draggedElement = null;
         let draggedType = null;
+
+        // Search timeouts
+        let intranetSearchTimeout = null;
+        let googleSearchTimeout = null;
 
         // Default data
         const defaultSections = [
@@ -1697,83 +1722,10 @@
             });
         }
 
-        // Search functionality
-        let currentSearchType = 'internal';
-        let searchTimeout = null;
-
-        // Setup search tabs
-        document.querySelectorAll('.search-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Update active tab
-                document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update search type
-                currentSearchType = this.dataset.searchType;
-                
-                // Show/hide appropriate search input
-                const intranetInput = document.getElementById('intranetSearchInput');
-                const googleInput = document.getElementById('googleSearchInput');
-                
-                if (currentSearchType === 'internal') {
-                    intranetInput.classList.remove('hidden');
-                    googleInput.classList.add('hidden');
-                    intranetInput.focus();
-                } else {
-                    intranetInput.classList.add('hidden');
-                    googleInput.classList.remove('hidden');
-                    googleInput.focus();
-                }
-                
-                // Clear searches and hide suggestions
-                intranetInput.value = '';
-                googleInput.value = '';
-                hideSearchSuggestions();
-                
-                // Reset internal search display when switching to Google
-                if (currentSearchType === 'google') {
-                    resetInternalSearchDisplay();
-                }
-            });
-        });
-
         // Intranet search functionality
-        document.getElementById('intranetSearchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            performInternalSearch(searchTerm);
-        });
-
-        // Google search functionality
-        document.getElementById('googleSearchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            
-            // Clear previous timeout
-            if (searchTimeout) {
-                clearTimeout(searchTimeout);
-            }
-            
-            if (searchTerm.length > 0) {
-                searchTimeout = setTimeout(() => {
-                    showGoogleSuggestions(searchTerm);
-                }, 300);
-            } else {
-                hideSearchSuggestions();
-            }
-        });
-
-        // Handle Enter key for Google search
-        document.getElementById('googleSearchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const searchTerm = e.target.value.trim();
-                if (searchTerm) {
-                    performGoogleSearch(searchTerm);
-                }
-            }
-        });
-
-        // Internal search function
         function performInternalSearch(searchTerm) {
             const sections = document.querySelectorAll('.section');
+            let matchingLinks = [];
             
             sections.forEach(section => {
                 const linkItems = section.querySelectorAll('.link-item');
@@ -1791,6 +1743,9 @@
                         if (searchTerm === '' || title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
                             item.style.display = 'flex';
                             hasVisibleItems = true;
+                            if (searchTerm !== '') {
+                                matchingLinks.push(linkData);
+                            }
                         } else {
                             item.style.display = 'none';
                         }
@@ -1799,22 +1754,53 @@
                 
                 section.style.display = hasVisibleItems || searchTerm === '' ? 'block' : 'none';
             });
+            
+            // Show suggestions for intranet search
+            if (searchTerm.length > 0) {
+                showIntranetSuggestions(matchingLinks, searchTerm);
+            } else {
+                hideIntranetSuggestions();
+            }
         }
 
-        // Reset internal search display
-        function resetInternalSearchDisplay() {
-            document.querySelectorAll('.section').forEach(section => {
-                section.style.display = 'block';
-                section.querySelectorAll('.link-item').forEach(item => {
-                    item.style.display = 'flex';
+        function showIntranetSuggestions(matchingLinks, searchTerm) {
+            const suggestionsContainer = document.getElementById('intranetSuggestions');
+            suggestionsContainer.innerHTML = '';
+            
+            if (matchingLinks.length === 0) {
+                suggestionsContainer.innerHTML = '<div class="search-suggestion">Geen resultaten gevonden</div>';
+            } else {
+                matchingLinks.slice(0, 5).forEach(link => {
+                    const suggestionElement = document.createElement('div');
+                    suggestionElement.className = 'search-suggestion';
+                    suggestionElement.innerHTML = `
+                        <span class="suggestion-icon">🔗</span>
+                        <span class="suggestion-text">${link.title}</span>
+                        <span class="suggestion-type">${sections.find(s => s.id === link.category)?.title || 'Onbekend'}</span>
+                    `;
+                    
+                    suggestionElement.addEventListener('click', function() {
+                        window.open(link.url, '_blank');
+                        hideIntranetSuggestions();
+                        document.getElementById('intranetSearchInput').value = '';
+                        performInternalSearch('');
+                    });
+                    
+                    suggestionsContainer.appendChild(suggestionElement);
                 });
-            });
+            }
+            
+            suggestionsContainer.style.display = 'block';
+        }
+
+        function hideIntranetSuggestions() {
+            document.getElementById('intranetSuggestions').style.display = 'none';
         }
 
         // Google search functions
         function showGoogleSuggestions(query) {
             const suggestions = [
-                { text: `${query}`, type: 'Zoeken', icon: '🔍' },
+                { text: query, type: 'Zoeken', icon: '🔍' },
                 { text: `${query} site:github.com`, type: 'GitHub', icon: '💻' },
                 { text: `${query} site:stackoverflow.com`, type: 'Stack Overflow', icon: '❓' },
                 { text: `${query} site:youtube.com`, type: 'YouTube', icon: '🎥' },
@@ -1822,7 +1808,7 @@
                 { text: `${query} filetype:pdf`, type: 'PDF', icon: '📄' }
             ];
             
-            const suggestionsContainer = document.getElementById('searchSuggestions');
+            const suggestionsContainer = document.getElementById('googleSuggestions');
             suggestionsContainer.innerHTML = '';
             
             suggestions.forEach(suggestion => {
@@ -1844,8 +1830,8 @@
             suggestionsContainer.style.display = 'block';
         }
 
-        function hideSearchSuggestions() {
-            document.getElementById('searchSuggestions').style.display = 'none';
+        function hideGoogleSuggestions() {
+            document.getElementById('googleSuggestions').style.display = 'none';
         }
 
         function performGoogleSearch(query) {
@@ -1854,15 +1840,8 @@
             
             // Clear Google search and hide suggestions
             document.getElementById('googleSearchInput').value = '';
-            hideSearchSuggestions();
+            hideGoogleSuggestions();
         }
-
-        // Hide suggestions when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.search-container')) {
-                hideSearchSuggestions();
-            }
-        });
 
         // Form submissions
         document.getElementById('linkForm').addEventListener('submit', function(e) {
@@ -2119,6 +2098,9 @@
             // Refresh weather every 30 minutes
             setInterval(loadWeather, 30 * 60 * 1000);
             
+            // Setup search functionality
+            setupSearchFunctionality();
+            
             // Handle link clicks - prevent drag from triggering navigation
             document.addEventListener('click', function(e) {
                 if (e.target.closest('.link-control-btn') || e.target.closest('.drag-handle')) {
@@ -2136,6 +2118,68 @@
                 }
             });
         });
+
+        function setupSearchFunctionality() {
+            // Intranet search
+            document.getElementById('intranetSearchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                
+                if (intranetSearchTimeout) {
+                    clearTimeout(intranetSearchTimeout);
+                }
+                
+                intranetSearchTimeout = setTimeout(() => {
+                    performInternalSearch(searchTerm);
+                }, 200);
+            });
+
+            // Google search
+            document.getElementById('googleSearchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                
+                if (googleSearchTimeout) {
+                    clearTimeout(googleSearchTimeout);
+                }
+                
+                if (searchTerm.length > 0) {
+                    googleSearchTimeout = setTimeout(() => {
+                        showGoogleSuggestions(searchTerm);
+                    }, 300);
+                } else {
+                    hideGoogleSuggestions();
+                }
+            });
+
+            // Handle Enter key for Google search
+            document.getElementById('googleSearchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = e.target.value.trim();
+                    if (searchTerm) {
+                        performGoogleSearch(searchTerm);
+                    }
+                }
+            });
+
+            // Handle Enter key for intranet search (just focus first result)
+            document.getElementById('intranetSearchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const firstSuggestion = document.querySelector('#intranetSuggestions .search-suggestion');
+                    if (firstSuggestion) {
+                        firstSuggestion.click();
+                    }
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#intranetSearchInput') && !e.target.closest('#intranetSuggestions')) {
+                    hideIntranetSuggestions();
+                }
+                if (!e.target.closest('#googleSearchInput') && !e.target.closest('#googleSuggestions')) {
+                    hideGoogleSuggestions();
+                }
+            });
+        }
     </script>
 </body>
 </html>
