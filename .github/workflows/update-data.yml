@@ -1,0 +1,25 @@
+# .github/workflows/update-data.yml
+name: Update Intranet Data
+on:
+  workflow_dispatch:
+    inputs:
+      data:
+        description: 'JSON data to update'
+        required: true
+        type: string
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update data file
+        run: |
+          echo '${{ github.event.inputs.data }}' > data/intranet-data.json
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/intranet-data.json
+          git commit -m "Update intranet data" || exit 0
+          git push
