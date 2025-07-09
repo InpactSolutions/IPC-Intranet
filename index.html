@@ -1830,12 +1830,32 @@
                 linkItem.draggable = true;
                 console.log('Made link draggable:', linkItem.dataset.linkId);
                 
+                // Track if we clicked on the drag handle
+                let dragFromHandle = false;
+                
+                // Add mousedown listener to drag handle
+                const dragHandle = linkItem.querySelector('.drag-handle');
+                if (dragHandle) {
+                    dragHandle.addEventListener('mousedown', function(e) {
+                        dragFromHandle = true;
+                        console.log('🖱️ Mouse down on drag handle for link:', linkItem.dataset.linkId);
+                        
+                        // Reset flag after short delay
+                        setTimeout(() => {
+                            dragFromHandle = false;
+                        }, 200);
+                    });
+                }
+                
                 // Add dragstart listener directly to each link
                 linkItem.addEventListener('dragstart', function(e) {
                     console.log('🔥 DRAGSTART FIRED for link:', linkItem.dataset.linkId);
+                    console.log('🖱️ Drag from handle:', dragFromHandle);
+                    console.log('🎯 Event target:', e.target);
+                    console.log('🎯 Closest drag-handle:', e.target.closest('.drag-handle'));
                     
-                    // Only allow if clicked on drag handle
-                    if (!e.target.closest('.drag-handle')) {
+                    // Allow drag if we recently clicked on handle OR if target is handle
+                    if (!dragFromHandle && !e.target.closest('.drag-handle')) {
                         console.log('❌ Prevented - not from handle');
                         e.preventDefault();
                         return;
@@ -1894,6 +1914,9 @@
                 // Add dragend listener
                 linkItem.addEventListener('dragend', function(e) {
                     console.log('🔥 DRAGEND FIRED for link:', linkItem.dataset.linkId);
+                    
+                    // Reset flag
+                    dragFromHandle = false;
                     
                     // Reset all styling
                     document.querySelectorAll('.link-item').forEach(link => {
