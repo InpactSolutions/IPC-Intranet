@@ -319,15 +319,6 @@
             box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.2);
         }
 
-        .search-box.afd-search {
-            border-color: rgba(255, 152, 0, 0.5);
-        }
-
-        .search-box.afd-search:focus {
-            border-color: rgba(255, 152, 0, 0.8);
-            box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
-        }
-
         .search-suggestions {
             position: absolute;
             top: 100%;
@@ -1114,14 +1105,6 @@
                     </div>
                     
                     <div class="search-box-wrapper">
-                        <span class="search-label">📊 AFD:</span>
-                        <div class="search-input-container">
-                            <input type="text" class="search-box afd-search" placeholder="Zoek in AFD datacatalogus..." id="afdSearchInput">
-                            <div class="search-suggestions" id="afdSuggestions"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="search-box-wrapper">
                         <span class="search-label">🌐 Google:</span>
                         <div class="google-search-container">
                             <div class="gcse-searchbox-only" data-resultsUrl="https://www.google.com/search" data-newWindow="true" data-queryParameterName="q"></div>
@@ -1219,7 +1202,6 @@
 
         // Search timeouts
         let intranetSearchTimeout = null;
-        let afdSearchTimeout = null;
 
         // Default data
         const defaultSections = [
@@ -1842,91 +1824,135 @@
                 });
             });
 
-            // Link drag and drop with mouse events
+            // Link drag and drop - make links draggable and handle drop zones
             document.querySelectorAll('.link-item').forEach(link => {
+                // Make the entire link draggable, but only when dragging from the drag handle
+                link.draggable = false; // Initially not draggable
+                
                 const dragHandle = link.querySelector('.drag-handle');
                 if (dragHandle) {
-                    let isDragging = false;
-                    
+                    // Make link draggable when mousedown on drag handle
                     dragHandle.addEventListener('mousedown', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        isDragging = true;
+                        link.draggable = true;
                         
-                        draggedElement = link;
-                        draggedType = 'link';
-                        link.classList.add('dragging');
-                        
-                        const onMouseMove = function(e) {
-                            if (!isDragging) return;
-                            
-                            const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
-                            const targetLink = elementBelow?.closest('.link-item');
-                            const targetGrid = elementBelow?.closest('.links-grid');
-                            
-                            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-                            
-                            if (targetLink && targetLink !== link) {
-                                targetLink.classList.add('drag-over');
-                            } else if (targetGrid) {
-                                targetGrid.classList.add('drag-over');
+                        // Add a small delay to distinguish from click
+                        setTimeout(() => {
+                            if (link.draggable) {
+                                link.classList.add('drag-ready');
                             }
-                        };
-                        
-                        const onMouseUp = function(e) {
-                            if (!isDragging) return;
-                            
-                            isDragging = false;
-                            
-                            const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
-                            const targetLink = elementBelow?.closest('.link-item');
-                            const targetGrid = elementBelow?.closest('.links-grid');
-                            
-                            if (targetLink && targetLink !== link) {
-                                const draggedLinkId = parseInt(link.dataset.linkId);
-                                const dropLinkId = parseInt(targetLink.dataset.linkId);
-                                
-                                const draggedIndex = links.findIndex(l => l.id === draggedLinkId);
-                                const dropIndex = links.findIndex(l => l.id === dropLinkId);
-                                
-                                const draggedLink = links[draggedIndex];
-                                links.splice(draggedIndex, 1);
-                                links.splice(dropIndex, 0, draggedLink);
-                                
-                                saveToStorage();
-                                renderSections();
-                                showNotification('Link volgorde aangepast!');
-                            } else if (targetGrid) {
-                                const draggedLinkId = parseInt(link.dataset.linkId);
-                                const targetCategory = targetGrid.id.replace('links-', '');
-                                
-                                const linkIndex = links.findIndex(l => l.id === draggedLinkId);
-                                if (linkIndex !== -1) {
-                                    links[linkIndex].category = targetCategory;
-                                    saveToStorage();
-                                    renderSections();
-                                    showNotification('Link verplaatst naar andere sectie!');
-                                }
-                            }
-                            
-                            document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
-                            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-                            document.removeEventListener('mousemove', onMouseMove);
-                            document.removeEventListener('mouseup', onMouseUp);
-                            
-                            draggedElement = null;
-                            draggedType = null;
-                        };
-                        
-                        document.addEventListener('mousemove', onMouseMove);
-                        document.addEventListener('mouseup', onMouseUp);
+                        }, 100);
                     });
                     
-                    dragHandle.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
+                    // Reset draggable state on mouseup
+                    dragHandle.addEventListener('mouseup', function(e) {
+                        setTimeout(() => {
+                            link.draggable = false;
+                            link.classList.remove('drag-ready');
+                        }, 100);
                     });
                 }
+                
+                // Handle drag start
+                link.addEventListener('dragstart', function(e) {
+                    if (!link.draggable) {
+                        e.preventDefault();
+                        return;
+                    }
+                    
+                    draggedElement = link;
+                    draggedType = 'link';
+                    link.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', link.dataset.linkId);
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                
+                // Handle drag over for links
+                link.addEventListener('dragover', function(e) {
+                    if (draggedType === 'link' && link !== draggedElement) {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        link.classList.add('drag-over');
+                    }
+                });
+                
+                // Handle drop on links
+                link.addEventListener('drop', function(e) {
+                    if (draggedType === 'link' && link !== draggedElement && draggedElement) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const draggedLinkId = parseInt(draggedElement.dataset.linkId);
+                        const dropLinkId = parseInt(link.dataset.linkId);
+                        
+                        const draggedIndex = links.findIndex(l => l.id === draggedLinkId);
+                        const dropIndex = links.findIndex(l => l.id === dropLinkId);
+                        
+                        if (draggedIndex !== -1 && dropIndex !== -1) {
+                            const draggedLink = links[draggedIndex];
+                            links.splice(draggedIndex, 1);
+                            links.splice(dropIndex, 0, draggedLink);
+                            
+                            saveToStorage();
+                            renderSections();
+                            showNotification('Link volgorde aangepast!');
+                        }
+                    }
+                    link.classList.remove('drag-over');
+                });
+                
+                // Handle drag end
+                link.addEventListener('dragend', function() {
+                    link.draggable = false;
+                    document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+                    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                    document.querySelectorAll('.drag-ready').forEach(el => el.classList.remove('drag-ready'));
+                    draggedElement = null;
+                    draggedType = null;
+                });
+                
+                // Handle drag leave
+                link.addEventListener('dragleave', function() {
+                    link.classList.remove('drag-over');
+                });
+            });
+            
+            // Also handle drops on link grids (sections)
+            document.querySelectorAll('.links-grid').forEach(grid => {
+                grid.addEventListener('dragover', function(e) {
+                    if (draggedType === 'link') {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        grid.classList.add('drag-over');
+                    }
+                });
+                
+                grid.addEventListener('drop', function(e) {
+                    if (draggedType === 'link' && draggedElement) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const draggedLinkId = parseInt(draggedElement.dataset.linkId);
+                        const targetCategory = grid.id.replace('links-', '');
+                        
+                        const linkIndex = links.findIndex(l => l.id === draggedLinkId);
+                        if (linkIndex !== -1) {
+                            const currentCategory = links[linkIndex].category;
+                            if (currentCategory !== targetCategory) {
+                                links[linkIndex].category = targetCategory;
+                                saveToStorage();
+                                renderSections();
+                                showNotification('Link verplaatst naar andere sectie!');
+                            }
+                        }
+                    }
+                    grid.classList.remove('drag-over');
+                });
+                
+                grid.addEventListener('dragleave', function() {
+                    grid.classList.remove('drag-over');
+                });
             });
         }
 
@@ -2003,98 +2029,6 @@
 
         function hideIntranetSuggestions() {
             document.getElementById('intranetSuggestions').style.display = 'none';
-        }
-
-        // AFD search functions
-        function showAFDSuggestions(query) {
-            const suggestions = [
-                { text: `Open AFD tool en zoek handmatig`, type: 'AFD Datacatalogus', icon: '🔍', action: 'open' },
-                { text: `Copy zoekterm: "${query}"`, type: 'Kopieer naar clipboard', icon: '📋', action: 'copy' },
-                { text: `Zoek "${query}" op Google`, type: 'Google Search', icon: '🌐', action: 'google' },
-                { text: `Zoek "${query}" in SIVI docs`, type: 'SIVI Website', icon: '📄', action: 'sivi' },
-                { text: `AFD Online Samenstellen`, type: 'AOS Portal', icon: '🚀', action: 'aos' }
-            ];
-            
-            const suggestionsContainer = document.getElementById('afdSuggestions');
-            suggestionsContainer.innerHTML = '';
-            
-            suggestions.forEach(suggestion => {
-                const suggestionElement = document.createElement('div');
-                suggestionElement.className = 'search-suggestion';
-                suggestionElement.innerHTML = `
-                    <span class="suggestion-icon">${suggestion.icon}</span>
-                    <span class="suggestion-text">${suggestion.text}</span>
-                    <span class="suggestion-type">${suggestion.type}</span>
-                `;
-                
-                suggestionElement.addEventListener('click', function() {
-                    performAFDSearch(query, suggestion.action);
-                });
-                
-                suggestionsContainer.appendChild(suggestionElement);
-            });
-            
-            suggestionsContainer.style.display = 'block';
-        }
-
-        function hideAFDSuggestions() {
-            document.getElementById('afdSuggestions').style.display = 'none';
-        }
-
-        async function performAFDSearch(query, action) {
-            const afdUrl = 'https://inpactsolutions.github.io/afd-datacatalogus/';
-            
-            switch (action) {
-                case 'open':
-                    // Open AFD tool and show notification with search term
-                    window.open(afdUrl, '_blank');
-                    showNotification(`💡 AFD tool geopend! Zoek handmatig naar: "${query}"`);
-                    break;
-                    
-                case 'copy':
-                    // Copy search term to clipboard
-                    try {
-                        await navigator.clipboard.writeText(query);
-                        showNotification(`📋 Zoekterm "${query}" gekopieerd naar clipboard!`);
-                    } catch (err) {
-                        // Fallback for older browsers
-                        const textArea = document.createElement('textarea');
-                        textArea.value = query;
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                        showNotification(`📋 Zoekterm "${query}" gekopieerd!`);
-                    }
-                    break;
-                    
-                case 'google':
-                    // Search on Google with AFD-specific terms
-                    const googleQuery = `${query} AFD 1.0 standaard insurance`;
-                    window.open(`https://www.google.com/search?q=${encodeURIComponent(googleQuery)}`, '_blank');
-                    break;
-                    
-                case 'sivi':
-                    // Search on SIVI website
-                    const siviQuery = `site:sivi.org ${query}`;
-                    window.open(`https://www.google.com/search?q=${encodeURIComponent(siviQuery)}`, '_blank');
-                    break;
-                    
-                case 'aos':
-                    // Open AOS portal
-                    window.open('https://portal.sivi.org/', '_blank');
-                    showNotification(`🚀 AOS Portal geopend! Zoek daar naar: "${query}"`);
-                    break;
-                    
-                default:
-                    // Fallback: just open the AFD tool
-                    window.open(afdUrl, '_blank');
-                    break;
-            }
-            
-            // Clear AFD search and hide suggestions
-            document.getElementById('afdSearchInput').value = '';
-            hideAFDSuggestions();
         }
 
         // Form submissions
@@ -2387,33 +2321,6 @@
                 }, 200);
             });
 
-            // AFD search
-            document.getElementById('afdSearchInput').addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase().trim();
-                
-                if (afdSearchTimeout) {
-                    clearTimeout(afdSearchTimeout);
-                }
-                
-                if (searchTerm.length > 0) {
-                    afdSearchTimeout = setTimeout(() => {
-                        showAFDSuggestions(searchTerm);
-                    }, 300);
-                } else {
-                    hideAFDSuggestions();
-                }
-            });
-
-            // Handle Enter key for AFD search
-            document.getElementById('afdSearchInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    const searchTerm = e.target.value.trim();
-                    if (searchTerm) {
-                        performAFDSearch(searchTerm, 'open');
-                    }
-                }
-            });
-
             // Handle Enter key for intranet search (just focus first result)
             document.getElementById('intranetSearchInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
@@ -2428,9 +2335,6 @@
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('#intranetSearchInput') && !e.target.closest('#intranetSuggestions')) {
                     hideIntranetSuggestions();
-                }
-                if (!e.target.closest('#afdSearchInput') && !e.target.closest('#afdSuggestions')) {
-                    hideAFDSuggestions();
                 }
             });
         }
