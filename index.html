@@ -579,6 +579,14 @@
             transform: rotate(2deg);
         }
 
+        .drag-ready {
+            cursor: move !important;
+        }
+
+        .drag-ready * {
+            pointer-events: none !important;
+        }
+
         .drag-over {
             border: 2px dashed rgba(255, 255, 255, 0.5) !important;
             background: rgba(255, 255, 255, 0.1) !important;
