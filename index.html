@@ -1188,9 +1188,6 @@
         function addLinkToDOM(link) {
             const linksGrid = document.getElementById(`links-${link.category}`);
             if (linksGrid) {
-                const tagsHTML = link.tags && link.tags.length > 0 ? 
-                    `<div class="tags-container">${link.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : '';
-                
                 const linkHTML = `
                     <a href="${link.url}" class="link-item" data-link-id="${link.id}" target="_blank">
                         <svg class="link-icon" viewBox="0 0 24 24">
@@ -1199,7 +1196,6 @@
                         <div class="link-content">
                             <div class="link-title">${link.title}</div>
                             <div class="link-description">${link.description}</div>
-                            ${tagsHTML}
                         </div>
                         <div class="link-controls">
                             <button class="link-control-btn" onclick="editLink(this)" title="Bewerk">✏️</button>
