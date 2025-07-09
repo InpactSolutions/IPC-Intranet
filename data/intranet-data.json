@@ -59,7 +59,7 @@
     },
     {
       "id": 5,
-      "title": "AOS",
+      "title": "AOS (UIV)",
       "url": "https://portal.sivi.org/",
       "description": "AOS (AFD Online Samenstellen)",
       "category": "monitoring",
@@ -155,17 +155,17 @@
     },
     {
       "id": 16,
-      "title": "IPC Servicedesk klantenoverzicht",
-      "url": "https://awisoftware.atlassian.net/jira/servicedesk/projects/IPC/organizations",
+      "title": "UIV templates",
+      "url": "https://www.sivi.org/volmacht-distributie/uniforme-inrichting-volmachtketen-uiv/",
       "description": "",
-      "category": "tools",
+      "category": "monitoring",
       "tags": [
-        "jira",
-        "ipc",
-        "servicedesk"
+        "sivi",
+        "aos",
+        "afd"
       ]
     }
   ],
   "linkIdCounter": 17,
-  "lastUpdated": "2025-07-09T10:46:40.030Z"
+  "lastUpdated": "2025-07-09T10:49:06.468Z"
 }
