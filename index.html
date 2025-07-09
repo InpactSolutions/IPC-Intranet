@@ -1815,72 +1815,30 @@
             });
         }
 
-        // Ultra simple drag and drop - remove handle requirement
+        // Simplified drag and drop - remove ALL restrictions
         function setupDragAndDrop() {
             console.log('Setting up drag and drop, admin mode:', isAdminMode);
             
             if (!isAdminMode) return;
-            
-            // Test - log when mainGrid is found
-            const mainGrid = document.getElementById('mainGrid');
-            console.log('MainGrid found:', !!mainGrid);
             
             // Make ALL links draggable and add simple listeners
             document.querySelectorAll('.link-item').forEach((linkItem, index) => {
                 linkItem.draggable = true;
                 console.log('Made link draggable:', linkItem.dataset.linkId);
                 
-                // Track drag state per link
-                let isDragEnabled = false;
-                
-                // Add click listener to drag handle to enable dragging
-                const dragHandle = linkItem.querySelector('.drag-handle');
-                if (dragHandle) {
-                    console.log('Found drag handle for link:', linkItem.dataset.linkId);
-                    
-                    dragHandle.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        isDragEnabled = true;
-                        console.log('🖱️ DRAG ENABLED for link:', linkItem.dataset.linkId);
-                        
-                        // Visual feedback
-                        linkItem.style.border = '2px dashed #00ff00';
-                        linkItem.style.cursor = 'move';
-                        
-                        // Auto-disable after 3 seconds
-                        setTimeout(() => {
-                            isDragEnabled = false;
-                            linkItem.style.border = '';
-                            linkItem.style.cursor = '';
-                            console.log('⏰ DRAG DISABLED for link:', linkItem.dataset.linkId);
-                        }, 3000);
-                    });
-                } else {
-                    console.log('❌ No drag handle found for link:', linkItem.dataset.linkId);
-                }
-                
-                // Add dragstart listener - no restrictions
+                // Add dragstart listener - NO RESTRICTIONS
                 linkItem.addEventListener('dragstart', function(e) {
                     console.log('🔥 DRAGSTART FIRED for link:', linkItem.dataset.linkId);
-                    console.log('🎯 Drag enabled:', isDragEnabled);
                     
-                    // Only allow if drag is enabled
-                    if (!isDragEnabled) {
-                        console.log('❌ Prevented - drag not enabled (click ⋮⋮ first)');
-                        e.preventDefault();
-                        return;
-                    }
-                    
-                    // Set data
+                    // Set data - ALWAYS ALLOW
                     draggedElement = linkItem;
                     draggedType = 'link';
                     e.dataTransfer.setData('text/plain', linkItem.dataset.linkId);
                     
                     // Visual feedback
                     linkItem.style.opacity = '0.5';
-                    console.log('✅ Drag started successfully');
+                    linkItem.style.transform = 'scale(0.95)';
+                    console.log('✅ Drag started successfully - NO RESTRICTIONS');
                 });
                 
                 // Add dragover listener
@@ -1889,8 +1847,9 @@
                     
                     if (draggedType === 'link' && linkItem !== draggedElement) {
                         e.preventDefault();
-                        linkItem.style.backgroundColor = 'yellow';
-                        console.log('✅ Allowing drop');
+                        linkItem.style.backgroundColor = 'rgba(255, 255, 0, 0.8)';
+                        linkItem.style.transform = 'scale(1.02)';
+                        console.log('✅ Allowing drop on link:', linkItem.dataset.linkId);
                     }
                 });
                 
@@ -1909,16 +1868,22 @@
                         const draggedIndex = links.findIndex(l => l.id === draggedId);
                         const targetIndex = links.findIndex(l => l.id === targetId);
                         
+                        console.log('📍 Found indices:', draggedIndex, targetIndex);
+                        
                         if (draggedIndex !== -1 && targetIndex !== -1) {
                             const temp = links[draggedIndex];
                             links[draggedIndex] = links[targetIndex];
                             links[targetIndex] = temp;
                             
                             console.log('✅ SWAP SUCCESSFUL!');
+                            console.log('📋 Before:', draggedId, 'at index', draggedIndex);
+                            console.log('📋 After:', targetId, 'at index', targetIndex);
                             
                             saveToStorage();
                             renderSections();
-                            showNotification('🎉 Links verwisseld!');
+                            showNotification('🎉 Links verwisseld: ' + draggedId + ' ↔ ' + targetId);
+                        } else {
+                            console.error('❌ Could not find indices');
                         }
                     }
                 });
@@ -1927,28 +1892,28 @@
                 linkItem.addEventListener('dragend', function(e) {
                     console.log('🔥 DRAGEND FIRED for link:', linkItem.dataset.linkId);
                     
-                    // Reset drag state
-                    isDragEnabled = false;
-                    
                     // Reset all styling
                     document.querySelectorAll('.link-item').forEach(link => {
                         link.style.opacity = '';
                         link.style.backgroundColor = '';
-                        link.style.border = '';
-                        link.style.cursor = '';
+                        link.style.transform = '';
                     });
                     
                     draggedElement = null;
                     draggedType = null;
+                    console.log('🧹 Cleanup complete');
                 });
                 
                 // Add dragleave listener
                 linkItem.addEventListener('dragleave', function(e) {
-                    linkItem.style.backgroundColor = '';
+                    if (draggedType === 'link' && linkItem !== draggedElement) {
+                        linkItem.style.backgroundColor = '';
+                        linkItem.style.transform = '';
+                    }
                 });
             });
             
-            console.log('✅ Drag and drop setup complete');
+            console.log('✅ Drag and drop setup complete - ALL LINKS ARE DRAGGABLE');
         }
 
         // Intranet search functionality
