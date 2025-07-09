@@ -164,8 +164,19 @@
         "aos",
         "afd"
       ]
+    },
+    {
+      "id": 17,
+      "title": "RDW data",
+      "url": "https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Gekentekende_voertuigen/m9d7-ebf2/explore",
+      "description": "",
+      "category": "infrastructure",
+      "tags": [
+        "RDW",
+        "kenteken"
+      ]
     }
   ],
-  "linkIdCounter": 17,
-  "lastUpdated": "2025-07-09T10:49:06.468Z"
+  "linkIdCounter": 18,
+  "lastUpdated": "2025-07-09T10:52:01.056Z"
 }
