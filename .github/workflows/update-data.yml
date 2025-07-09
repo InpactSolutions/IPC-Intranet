@@ -1,35 +1,35 @@
-// netlify/functions/update-data.js
-exports.handler = async (event, context) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
-  }
+name: Update Intranet Data
 
-  const { Octokit } = require("@octokit/rest");
-  const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN
-  });
+on:
+  workflow_dispatch:
+    inputs:
+      data:
+        description: 'JSON data to update'
+        required: true
+        type: string
 
-  try {
-    const data = JSON.parse(event.body);
-    
-    // Update file in GitHub
-    await octokit.repos.createOrUpdateFileContents({
-      owner: process.env.GITHUB_OWNER,
-      repo: process.env.GITHUB_REPO,
-      path: 'data/intranet-data.json',
-      message: '🔄 Auto-update intranet data',
-      content: Buffer.from(JSON.stringify(data, null, 2)).toString('base64'),
-      sha: await getFileSha() // Helper function to get current file SHA
-    });
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true })
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
-  }
-};
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Update data file
+        run: |
+          mkdir -p data
+          echo '${{ github.event.inputs.data }}' > data/intranet-data.json
+          
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/intranet-data.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "🔄 Auto-update intranet data $(date '+%Y-%m-%d %H:%M:%S')"
+            git push
+          fi
