@@ -1,0 +1,122 @@
+{
+  "sections": [
+    {
+      "id": "tools",
+      "title": "Jira",
+      "icon": "M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"
+    },
+    {
+      "id": "monitoring",
+      "title": "AFD",
+      "icon": "M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
+    },
+    {
+      "id": "PE Beheer",
+      "title": "PE Beheer",
+      "icon": "M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"
+    },
+    {
+      "id": "documentation",
+      "title": "GPT",
+      "icon": "M5.5 5.1L2 12v6c0 1.1.9 2 2 2h16a2 2 0 002-2v-6l-3.4-6.9A2 2 0 0016.8 4H7.2a2 2 0 00-1.8 1.1z"
+    },
+    {
+      "id": "infrastructure",
+      "title": "Tools",
+      "icon": "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+    }
+  ],
+  "links": [
+    {
+      "id": 2,
+      "title": "IPC Board",
+      "url": "https://awisoftware.atlassian.net/jira/software/c/projects/PE/boards/94",
+      "description": "",
+      "category": "tools"
+    },
+    {
+      "id": 3,
+      "title": "IPC Servicedesk",
+      "url": "https://awisoftware.atlassian.net/jira/servicedesk/projects/IPC/boards/107",
+      "description": "",
+      "category": "tools"
+    },
+    {
+      "id": 4,
+      "title": "AFD 1.0 zoektool",
+      "url": "https://inpactsolutions.github.io/afd-datacatalogus/",
+      "description": "Inpact AFD zoektool",
+      "category": "monitoring"
+    },
+    {
+      "id": 5,
+      "title": "AOS",
+      "url": "https://portal.sivi.org/",
+      "description": "AOS (AFD Online Samenstellen)",
+      "category": "monitoring"
+    },
+    {
+      "id": 6,
+      "title": "DEV",
+      "url": "https://apetariffeditor.awisoftware.nl/",
+      "description": "",
+      "category": "PE Beheer"
+    },
+    {
+      "id": 7,
+      "title": "ACC",
+      "url": "https://ipc-tariffeditor-acc.awisoftware.nl/",
+      "description": "",
+      "category": "PE Beheer"
+    },
+    {
+      "id": 8,
+      "title": "Productanalyse",
+      "url": "https://chatgpt.com/g/g-683407fd9f688191b4f3763225b3a133-productanalyse-ipc-inpact",
+      "description": "",
+      "category": "documentation"
+    },
+    {
+      "id": 9,
+      "title": "PET Web",
+      "url": "https://ipc-forms.awisoftware.nl/",
+      "description": "Product engine test tool",
+      "category": "infrastructure"
+    },
+    {
+      "id": 11,
+      "title": "AFD 1.0 Online (SIVI)",
+      "url": "https://www.sivi.org/sivi-afs/online-diensten/afd-1-0-online-raadplegen/",
+      "description": "",
+      "category": "monitoring"
+    },
+    {
+      "id": 12,
+      "title": "Interne Confluence",
+      "url": "https://awisoftware.atlassian.net/wiki/spaces/PE/overview",
+      "description": "",
+      "category": "tools"
+    },
+    {
+      "id": 13,
+      "title": "Openbare Confluence",
+      "url": "https://awisoftware.atlassian.net/wiki/spaces/IK1/overview",
+      "description": "",
+      "category": "tools"
+    },
+    {
+      "id": 14,
+      "title": "PRD",
+      "url": "https://ipc-tariffeditor-prd.awisoftware.nl/",
+      "description": "",
+      "category": "PE Beheer"
+    },
+    {
+      "id": 15,
+      "title": "Transscript",
+      "url": "https://chatgpt.com/g/g-6853ba18f4ec81919b75ed778aff8d26-transcript-vertaler-naar-samenvatting-actiepunten",
+      "description": "",
+      "category": "documentation"
+    }
+  ]
+}
