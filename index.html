@@ -561,6 +561,10 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
+        .section-drag-handle {
+            margin-right: 12px;
+        }
+
         .drag-handle {
             cursor: move;
             color: rgba(255, 255, 255, 0.5);
@@ -1754,14 +1758,14 @@
                             <button class="control-btn" onclick="editSection(this)" title="Bewerk sectie">✏️</button>
                             <button class="control-btn" onclick="deleteSection(this)" title="Verwijder sectie">🗑️</button>
                         </div>
-                        <div class="section-header">
-                            <span class="drag-handle" title="Versleep sectie">⋮⋮</span>
+                        <div class="section-header" draggable="false">
+                            <span class="drag-handle section-drag-handle" title="Versleep sectie">⋮⋮</span>
                             <svg class="section-icon" viewBox="0 0 24 24">
                                 <path d="${section.icon}"/>
                             </svg>
                             <h2 class="section-title">${section.title}</h2>
                         </div>
-                        <div class="links-grid" id="links-${section.id}"></div>
+                        <div class="links-grid" id="links-${section.id}" draggable="false"></div>
                     </div>
                 `;
                 grid.insertAdjacentHTML('beforeend', sectionHTML);
@@ -1953,13 +1957,39 @@
         function setupDragAndDrop() {
             console.log('Setting up drag and drop, admin mode:', isAdminMode);
             
-            // Section drag and drop
+            // Section drag and drop - only allow from section drag handle
             document.querySelectorAll('.section').forEach(section => {
+                // Track if we're dragging from the section handle
+                let sectionDragFromHandle = false;
+                
+                const sectionDragHandle = section.querySelector('.section-drag-handle');
+                if (sectionDragHandle) {
+                    sectionDragHandle.addEventListener('mousedown', function(e) {
+                        sectionDragFromHandle = true;
+                        console.log('Mouse down on section drag handle');
+                        
+                        // Reset after a short delay
+                        setTimeout(() => {
+                            sectionDragFromHandle = false;
+                        }, 500);
+                    });
+                }
+                
                 section.addEventListener('dragstart', function(e) {
+                    console.log('Section dragstart event triggered');
+                    
+                    // Only allow dragging from section drag handle
+                    if (!sectionDragFromHandle) {
+                        console.log('Section drag prevented - not from section handle');
+                        e.preventDefault();
+                        return;
+                    }
+                    
                     draggedElement = section;
                     draggedType = 'section';
                     section.classList.add('dragging');
                     e.dataTransfer.setData('text/plain', section.dataset.category);
+                    console.log('Started dragging section:', section.dataset.category);
                 });
                 
                 section.addEventListener('dragover', function(e) {
@@ -1987,6 +2017,7 @@
                 });
                 
                 section.addEventListener('dragend', function() {
+                    sectionDragFromHandle = false; // Reset the flag
                     document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
                     document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
                     draggedElement = null;
