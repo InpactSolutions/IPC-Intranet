@@ -603,6 +603,7 @@
         <div class="admin-controls">
             <button class="admin-btn" onclick="refreshFromGitHub()">🔄 Refresh</button>
             <button class="admin-btn" onclick="syncToGitHub()">☁️ Sync to GitHub</button>
+            <button class="admin-btn" onclick="showGitHubConfigModal()">⚙️ GitHub Config</button>
             <button class="admin-btn" onclick="exportData()">📤 Export</button>
             <button class="admin-btn" onclick="saveForGitHub()">💾 Save for GitHub</button>
             <button class="admin-btn" onclick="importData()">📥 Import</button>
@@ -803,6 +804,12 @@
                 return;
             }
 
+            // Show loading state
+            const syncButton = document.querySelector('button[onclick="syncToGitHub()"]');
+            const originalText = syncButton.innerHTML;
+            syncButton.innerHTML = '⏳ Syncing...';
+            syncButton.disabled = true;
+
             try {
                 const data = {
                     sections: sections,
@@ -811,8 +818,11 @@
                     lastUpdated: new Date().toISOString()
                 };
 
+                // Clean repo name (remove https:// if present)
+                const cleanRepo = GITHUB_REPO.replace(/^https:\/\/github\.com\//, '');
+
                 // Trigger GitHub Action
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/update-data.yml/dispatches`, {
+                const response = await fetch(`https://api.github.com/repos/${cleanRepo}/actions/workflows/update-data.yml/dispatches`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `token ${GITHUB_TOKEN}`,
@@ -835,11 +845,16 @@
                         window.location.reload();
                     }, 3000);
                 } else {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
             } catch (error) {
                 console.error('Sync error:', error);
                 showNotification('❌ Sync failed: ' + error.message);
+            } finally {
+                // Restore button
+                syncButton.innerHTML = originalText;
+                syncButton.disabled = false;
             }
         }
 
@@ -847,20 +862,24 @@
         function showGitHubConfigModal() {
             const modal = document.createElement('div');
             modal.className = 'modal';
+            modal.id = 'githubConfigModal';
             modal.style.display = 'block';
             modal.innerHTML = `
                 <h2>GitHub Configuratie</h2>
                 <p>Voor automatische sync heb je een GitHub Personal Access Token nodig.</p>
                 <div class="form-group">
                     <label for="githubRepo">Repository (bijv: username/repo-name):</label>
-                    <input type="text" id="githubRepo" placeholder="jouw-username/intranet-repo" 
+                    <input type="text" id="githubRepo" placeholder="InpactSolutions/IPC-Intranet" 
                            value="${localStorage.getItem('github-repo') || ''}">
+                    <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                        Alleen de repository naam, NIET de volledige URL
+                    </small>
                 </div>
                 <div class="form-group">
                     <label for="githubToken">Personal Access Token:</label>
                     <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx"
                            value="${localStorage.getItem('github-token') || ''}">
-                    <small style="color: #666; font-size: 12px;">
+                    <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
                         Maak een token op: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
                         <br>Rechten: Actions (write), Contents (write), Metadata (read)
                     </small>
@@ -868,6 +887,7 @@
                 <div class="form-buttons">
                     <button type="button" class="btn btn-secondary" onclick="closeGitHubConfig()">Annuleren</button>
                     <button type="button" class="btn btn-primary" onclick="saveGitHubConfig()">Opslaan</button>
+                    <button type="button" class="btn" onclick="clearGitHubConfig()" style="background: #e74c3c; color: white;">Reset</button>
                 </div>
             `;
             
@@ -877,24 +897,40 @@
 
         // Save GitHub configuration
         function saveGitHubConfig() {
-            const repo = document.getElementById('githubRepo').value;
-            const token = document.getElementById('githubToken').value;
+            const repo = document.getElementById('githubRepo').value.trim();
+            const token = document.getElementById('githubToken').value.trim();
             
             if (!repo || !token) {
                 alert('Vul alle velden in');
                 return;
             }
             
-            localStorage.setItem('github-repo', repo);
+            // Clean repo name (remove https:// if present)
+            const cleanRepo = repo.replace(/^https:\/\/github\.com\//, '');
+            
+            localStorage.setItem('github-repo', cleanRepo);
             localStorage.setItem('github-token', token);
             
             closeGitHubConfig();
             showNotification('GitHub configuratie opgeslagen!');
         }
 
+        // Clear GitHub configuration
+        function clearGitHubConfig() {
+            if (confirm('Weet je zeker dat je de GitHub configuratie wilt wissen?')) {
+                localStorage.removeItem('github-repo');
+                localStorage.removeItem('github-token');
+                closeGitHubConfig();
+                showNotification('GitHub configuratie gewist!');
+            }
+        }
+
         // Close GitHub config modal
         function closeGitHubConfig() {
-            document.querySelector('.modal').remove();
+            const modal = document.getElementById('githubConfigModal');
+            if (modal) {
+                modal.remove();
+            }
             document.getElementById('overlay').style.display = 'none';
         }
 
