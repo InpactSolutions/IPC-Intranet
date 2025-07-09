@@ -460,7 +460,6 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            text-decoration: none;
             color: white;
             transition: all 0.2s ease;
             position: relative;
@@ -471,6 +470,20 @@
             background: rgba(255, 255, 255, 0.15);
             border-color: rgba(255, 255, 255, 0.2);
             transform: translateX(4px);
+        }
+
+        .link-anchor {
+            text-decoration: none;
+            color: inherit;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .link-anchor:hover {
+            text-decoration: none;
+            color: inherit;
         }
 
         .link-item::before {
@@ -1762,20 +1775,22 @@
             const linksGrid = document.getElementById(`links-${link.category}`);
             if (linksGrid) {
                 const linkHTML = `
-                    <a href="${link.url}" class="link-item" data-link-id="${link.id}" target="_blank">
+                    <div class="link-item" data-link-id="${link.id}" draggable="${isAdminMode}">
                         <span class="drag-handle" title="Versleep link">⋮⋮</span>
                         <svg class="link-icon" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                         </svg>
                         <div class="link-content">
-                            <div class="link-title">${link.title}</div>
-                            <div class="link-description">${link.description}</div>
+                            <a href="${link.url}" target="_blank" class="link-anchor">
+                                <div class="link-title">${link.title}</div>
+                                <div class="link-description">${link.description}</div>
+                            </a>
                         </div>
                         <div class="link-controls">
                             <button class="link-control-btn" onclick="editLink(this)" title="Bewerk">✏️</button>
                             <button class="link-control-btn" onclick="deleteLink(this)" title="Verwijder">🗑️</button>
                         </div>
-                    </a>
+                    </div>
                 `;
                 linksGrid.insertAdjacentHTML('beforeend', linkHTML);
             }
@@ -1832,106 +1847,75 @@
                 });
             });
 
-            // Link drag and drop - make links draggable and handle drop zones
+            // Link drag and drop - much simpler approach
             document.querySelectorAll('.link-item').forEach(link => {
-                // Make the entire link draggable, but only when dragging from the drag handle
-                link.draggable = false; // Initially not draggable
+                if (!isAdminMode) return;
                 
-                const dragHandle = link.querySelector('.drag-handle');
-                if (dragHandle) {
-                    // Make link draggable when mousedown on drag handle
-                    dragHandle.addEventListener('mousedown', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        link.draggable = true;
-                        
-                        // Add a small delay to distinguish from click
-                        setTimeout(() => {
-                            if (link.draggable) {
-                                link.classList.add('drag-ready');
-                            }
-                        }, 100);
-                    });
-                    
-                    // Reset draggable state on mouseup
-                    dragHandle.addEventListener('mouseup', function(e) {
-                        setTimeout(() => {
-                            link.draggable = false;
-                            link.classList.remove('drag-ready');
-                        }, 100);
-                    });
-                }
-                
-                // Handle drag start
                 link.addEventListener('dragstart', function(e) {
-                    if (!link.draggable) {
-                        e.preventDefault();
-                        return;
-                    }
-                    
                     draggedElement = link;
                     draggedType = 'link';
                     link.classList.add('dragging');
                     e.dataTransfer.setData('text/plain', link.dataset.linkId);
-                    e.dataTransfer.effectAllowed = 'move';
+                    console.log('Started dragging link:', link.dataset.linkId);
                 });
                 
-                // Handle drag over for links
                 link.addEventListener('dragover', function(e) {
                     if (draggedType === 'link' && link !== draggedElement) {
                         e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
                         link.classList.add('drag-over');
                     }
                 });
                 
-                // Handle drop on links
                 link.addEventListener('drop', function(e) {
                     if (draggedType === 'link' && link !== draggedElement && draggedElement) {
                         e.preventDefault();
                         e.stopPropagation();
                         
                         const draggedLinkId = parseInt(draggedElement.dataset.linkId);
-                        const dropLinkId = parseInt(link.dataset.linkId);
+                        const targetLinkId = parseInt(link.dataset.linkId);
                         
+                        console.log('Dropping link', draggedLinkId, 'on', targetLinkId);
+                        
+                        // Find the links in the array
                         const draggedIndex = links.findIndex(l => l.id === draggedLinkId);
-                        const dropIndex = links.findIndex(l => l.id === dropLinkId);
+                        const targetIndex = links.findIndex(l => l.id === targetLinkId);
                         
-                        if (draggedIndex !== -1 && dropIndex !== -1) {
+                        if (draggedIndex !== -1 && targetIndex !== -1) {
+                            // Get the dragged link
                             const draggedLink = links[draggedIndex];
-                            links.splice(draggedIndex, 1);
-                            links.splice(dropIndex, 0, draggedLink);
+                            const targetLink = links[targetIndex];
+                            
+                            // Simple swap
+                            links[draggedIndex] = targetLink;
+                            links[targetIndex] = draggedLink;
+                            
+                            console.log('Swapped links successfully');
                             
                             saveToStorage();
                             renderSections();
-                            showNotification('Link volgorde aangepast!');
+                            showNotification('Links verwisseld!');
                         }
                     }
                     link.classList.remove('drag-over');
                 });
                 
-                // Handle drag end
                 link.addEventListener('dragend', function() {
-                    link.draggable = false;
                     document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
                     document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-                    document.querySelectorAll('.drag-ready').forEach(el => el.classList.remove('drag-ready'));
                     draggedElement = null;
                     draggedType = null;
                 });
                 
-                // Handle drag leave
                 link.addEventListener('dragleave', function() {
                     link.classList.remove('drag-over');
                 });
             });
             
-            // Also handle drops on link grids (sections)
+            // Allow dropping links on sections to change category
             document.querySelectorAll('.links-grid').forEach(grid => {
                 grid.addEventListener('dragover', function(e) {
                     if (draggedType === 'link') {
                         e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
                         grid.classList.add('drag-over');
                     }
                 });
@@ -2305,12 +2289,15 @@
                     return;
                 }
                 
-                if (e.target.closest('.link-item')) {
-                    const linkItem = e.target.closest('.link-item');
-                    if (!linkItem.href || linkItem.href === '#') {
+                // Handle clicks on link anchors
+                const linkAnchor = e.target.closest('.link-anchor');
+                if (linkAnchor) {
+                    // Only prevent default if we're in admin mode and dragging
+                    if (isAdminMode && draggedElement) {
                         e.preventDefault();
-                        showNotification('Link nog niet geconfigureerd!');
+                        return;
                     }
+                    // Otherwise, let the normal link click work
                 }
             });
         });
