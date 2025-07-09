@@ -2008,11 +2008,11 @@
         // AFD search functions
         function showAFDSuggestions(query) {
             const suggestions = [
-                { text: `Direct zoeken: "${query}"`, type: 'AFD Zoeken', icon: '🔍', action: 'search' },
-                { text: `${query} in regelgeving`, type: 'Regelgeving', icon: '📋', action: 'filter', filter: 'regelgeving' },
-                { text: `${query} in standaarden`, type: 'Standaarden', icon: '📏', action: 'filter', filter: 'standaard' },
-                { text: `${query} in documentatie`, type: 'Docs', icon: '📄', action: 'filter', filter: 'documentatie' },
-                { text: `Open AFD tool`, type: 'Ga naar AFD', icon: '🚀', action: 'open' }
+                { text: `Open AFD tool en zoek handmatig`, type: 'AFD Datacatalogus', icon: '🔍', action: 'open' },
+                { text: `Copy zoekterm: "${query}"`, type: 'Kopieer naar clipboard', icon: '📋', action: 'copy' },
+                { text: `Zoek "${query}" op Google`, type: 'Google Search', icon: '🌐', action: 'google' },
+                { text: `Zoek "${query}" in SIVI docs`, type: 'SIVI Website', icon: '📄', action: 'sivi' },
+                { text: `AFD Online Samenstellen`, type: 'AOS Portal', icon: '🚀', action: 'aos' }
             ];
             
             const suggestionsContainer = document.getElementById('afdSuggestions');
@@ -2028,7 +2028,7 @@
                 `;
                 
                 suggestionElement.addEventListener('click', function() {
-                    performAFDSearch(query, suggestion.action, suggestion.filter);
+                    performAFDSearch(query, suggestion.action);
                 });
                 
                 suggestionsContainer.appendChild(suggestionElement);
@@ -2041,17 +2041,56 @@
             document.getElementById('afdSuggestions').style.display = 'none';
         }
 
-        function performAFDSearch(query, action, filter) {
+        async function performAFDSearch(query, action) {
             const afdUrl = 'https://inpactsolutions.github.io/afd-datacatalogus/';
-            let searchUrl = afdUrl;
             
-            if (action === 'search') {
-                searchUrl += `?search=${encodeURIComponent(query)}`;
-            } else if (action === 'filter' && filter) {
-                searchUrl += `?search=${encodeURIComponent(query)}&filter=${filter}`;
+            switch (action) {
+                case 'open':
+                    // Open AFD tool and show notification with search term
+                    window.open(afdUrl, '_blank');
+                    showNotification(`💡 AFD tool geopend! Zoek handmatig naar: "${query}"`);
+                    break;
+                    
+                case 'copy':
+                    // Copy search term to clipboard
+                    try {
+                        await navigator.clipboard.writeText(query);
+                        showNotification(`📋 Zoekterm "${query}" gekopieerd naar clipboard!`);
+                    } catch (err) {
+                        // Fallback for older browsers
+                        const textArea = document.createElement('textarea');
+                        textArea.value = query;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        showNotification(`📋 Zoekterm "${query}" gekopieerd!`);
+                    }
+                    break;
+                    
+                case 'google':
+                    // Search on Google with AFD-specific terms
+                    const googleQuery = `${query} AFD 1.0 standaard insurance`;
+                    window.open(`https://www.google.com/search?q=${encodeURIComponent(googleQuery)}`, '_blank');
+                    break;
+                    
+                case 'sivi':
+                    // Search on SIVI website
+                    const siviQuery = `site:sivi.org ${query}`;
+                    window.open(`https://www.google.com/search?q=${encodeURIComponent(siviQuery)}`, '_blank');
+                    break;
+                    
+                case 'aos':
+                    // Open AOS portal
+                    window.open('https://portal.sivi.org/', '_blank');
+                    showNotification(`🚀 AOS Portal geopend! Zoek daar naar: "${query}"`);
+                    break;
+                    
+                default:
+                    // Fallback: just open the AFD tool
+                    window.open(afdUrl, '_blank');
+                    break;
             }
-            
-            window.open(searchUrl, '_blank');
             
             // Clear AFD search and hide suggestions
             document.getElementById('afdSearchInput').value = '';
@@ -2370,7 +2409,7 @@
                 if (e.key === 'Enter') {
                     const searchTerm = e.target.value.trim();
                     if (searchTerm) {
-                        performAFDSearch(searchTerm);
+                        performAFDSearch(searchTerm, 'open');
                     }
                 }
             });
