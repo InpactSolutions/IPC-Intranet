@@ -1531,6 +1531,115 @@
                     });
                 });
                 
+                // Now setup link drag and drop
+                const linkElements = document.querySelectorAll('.link-item');
+                console.log('🔗 Found links:', linkElements.length);
+                
+                linkElements.forEach((link, index) => {
+                    console.log(`🔗 Setting up link ${index}`);
+                    link.draggable = true;
+                    
+                    link.addEventListener('dragstart', function(e) {
+                        // Only allow dragging by the drag handle
+                        if (!e.target.closest('.drag-handle')) {
+                            e.preventDefault();
+                            return;
+                        }
+                        
+                        console.log('🔗 Link drag started!');
+                        draggedElement = link;
+                        draggedType = 'link';
+                        link.classList.add('dragging');
+                        e.dataTransfer.setData('text/plain', link.dataset.linkId);
+                        e.stopPropagation(); // Prevent section drag
+                    });
+                    
+                    link.addEventListener('dragover', function(e) {
+                        if (draggedType === 'link') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (link !== draggedElement) {
+                                link.classList.add('drag-over');
+                            }
+                        }
+                    });
+                    
+                    link.addEventListener('drop', function(e) {
+                        if (draggedType === 'link') {
+                            console.log('🔗 Link dropped!');
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            if (link !== draggedElement && draggedElement) {
+                                const draggedLinkId = parseInt(draggedElement.dataset.linkId);
+                                const dropLinkId = parseInt(link.dataset.linkId);
+                                
+                                const draggedIndex = links.findIndex(l => l.id === draggedLinkId);
+                                const dropIndex = links.findIndex(l => l.id === dropLinkId);
+                                
+                                // Reorder links array
+                                const draggedLink = links[draggedIndex];
+                                links.splice(draggedIndex, 1);
+                                links.splice(dropIndex, 0, draggedLink);
+                                
+                                saveToStorage();
+                                renderSections();
+                                showNotification('Link volgorde aangepast!');
+                            }
+                            link.classList.remove('drag-over');
+                        }
+                    });
+                    
+                    link.addEventListener('dragend', function(e) {
+                        if (draggedType === 'link') {
+                            document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+                            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                            draggedElement = null;
+                            draggedType = null;
+                        }
+                    });
+                });
+                
+                // Also allow dropping links on empty areas of link grids (for cross-section moves)
+                const linkGrids = document.querySelectorAll('.links-grid');
+                linkGrids.forEach(grid => {
+                    grid.addEventListener('dragover', function(e) {
+                        if (draggedType === 'link') {
+                            e.preventDefault();
+                            grid.classList.add('drag-over');
+                        }
+                    });
+                    
+                    grid.addEventListener('drop', function(e) {
+                        if (draggedType === 'link') {
+                            console.log('🔗 Link dropped on grid!');
+                            e.preventDefault();
+                            
+                            if (draggedElement) {
+                                const draggedLinkId = parseInt(draggedElement.dataset.linkId);
+                                const targetCategory = grid.id.replace('links-', '');
+                                
+                                // Find the link and update its category
+                                const linkIndex = links.findIndex(l => l.id === draggedLinkId);
+                                if (linkIndex !== -1) {
+                                    links[linkIndex].category = targetCategory;
+                                    
+                                    saveToStorage();
+                                    renderSections();
+                                    showNotification('Link verplaatst naar andere sectie!');
+                                }
+                            }
+                            grid.classList.remove('drag-over');
+                        }
+                    });
+                    
+                    grid.addEventListener('dragleave', function(e) {
+                        if (draggedType === 'link') {
+                            grid.classList.remove('drag-over');
+                        }
+                    });
+                });
+                
                 console.log('✅ Drag and drop setup complete');
             } else {
                 console.log('👀 Normal mode - no drag and drop setup');
