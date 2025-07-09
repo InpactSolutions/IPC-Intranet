@@ -1537,22 +1537,33 @@
                 
                 linkElements.forEach((link, index) => {
                     console.log(`🔗 Setting up link ${index}`);
-                    link.draggable = true;
                     
-                    link.addEventListener('dragstart', function(e) {
-                        // Only allow dragging by the drag handle
-                        if (!e.target.closest('.drag-handle')) {
-                            e.preventDefault();
-                            return;
-                        }
+                    // Make the drag handle the draggable element, not the link
+                    const dragHandle = link.querySelector('.drag-handle');
+                    if (dragHandle) {
+                        dragHandle.draggable = true;
+                        dragHandle.style.cursor = 'move';
                         
-                        console.log('🔗 Link drag started!');
-                        draggedElement = link;
-                        draggedType = 'link';
-                        link.classList.add('dragging');
-                        e.dataTransfer.setData('text/plain', link.dataset.linkId);
-                        e.stopPropagation(); // Prevent section drag
-                    });
+                        dragHandle.addEventListener('dragstart', function(e) {
+                            console.log('🔗 Link drag started via handle!');
+                            draggedElement = link;
+                            draggedType = 'link';
+                            link.classList.add('dragging');
+                            e.dataTransfer.setData('text/plain', link.dataset.linkId);
+                            e.stopPropagation(); // Prevent section drag
+                        });
+                        
+                        // Prevent link navigation when clicking drag handle
+                        dragHandle.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        });
+                        
+                        dragHandle.addEventListener('mousedown', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        });
+                    }
                     
                     link.addEventListener('dragover', function(e) {
                         if (draggedType === 'link') {
