@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IPC Team Intranet</title>
-    <script async src="https://cse.google.com/cse.js?cx=d71cbd918b5d14e4d"></script>
     <style>
         * {
             margin: 0;
@@ -41,16 +40,16 @@
             z-index: 100;
         }
 
+        .header-left {
+            flex: 0 0 auto;
+            min-width: 200px;
+        }
+
         .header-left h1 {
             color: white;
             font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 4px;
-        }
-
-        .header-left {
-            flex: 0 0 auto;
-            min-width: 200px;
         }
 
         .header-left .subtitle {
@@ -149,7 +148,7 @@
             align-items: flex-end;
             gap: 12px;
             position: relative;
-            z-index: 10000;
+            z-index: 100000;
             min-width: 0;
         }
 
@@ -758,6 +757,56 @@
             display: none !important;
         }
 
+        /* Google CSE Results Styling */
+        .gcse-searchresults-only {
+            background: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+            z-index: 99999 !important;
+            margin-top: 20px !important;
+            padding: 20px !important;
+            display: none;
+        }
+
+        .gcse-searchresults-only.visible {
+            display: block !important;
+        }
+
+        .gcse-searchresults-only .gsc-results {
+            background: transparent !important;
+            color: #333 !important;
+        }
+
+        .gcse-searchresults-only .gsc-result {
+            margin-bottom: 16px !important;
+            padding: 12px !important;
+            border-radius: 8px !important;
+            background: rgba(255, 255, 255, 0.7) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .gcse-searchresults-only .gsc-result:hover {
+            background: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .gcse-searchresults-only .gsc-result .gsc-thumbnail {
+            border-radius: 6px !important;
+        }
+
+        .gcse-searchresults-only .gsc-result .gsc-url-top {
+            color: #1a73e8 !important;
+        }
+
+        .gcse-searchresults-only .gsc-result .gsc-title {
+            color: #1a73e8 !important;
+        }
+
+        .gcse-searchresults-only .gsc-result .gsc-snippet {
+            color: #5f6368 !important;
+        }
+
         /* Responsive design */
         @media (max-width: 1400px) {
             .search-container {
@@ -1024,9 +1073,6 @@
         <div class="main-grid" id="mainGrid">
             <!-- Sections will be dynamically loaded here -->
         </div>
-        
-        <!-- Google CSE Results Container -->
-        <div class="gcse-searchresults-only" id="googleResults"></div>
     </div>
 
     <button class="fab secondary" onclick="openSectionForm()" title="Nieuwe sectie">📁</button>
@@ -1276,291 +1322,6 @@
             modal.innerHTML = `
                 <h2>GitHub Configuratie</h2>
                 <p>Voor automatische sync heb je een GitHub Personal Access Token nodig.</p>
-                <div class="form-group">
-                    <label for="githubRepo">Repository (bijv: username/repo-name):</label>
-                    <input type="text" id="githubRepo" placeholder="InpactSolutions/IPC-Intranet" 
-                           value="${localStorage.getItem('github-repo') || ''}">
-                    <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
-                        Alleen de repository naam, NIET de volledige URL
-                    </small>
-                </div>
-                <div class="form-group">
-                    <label for="githubToken">Personal Access Token:</label>
-                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx"
-                           value="${localStorage.getItem('github-token') || ''}">
-                    <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
-                        Maak een token op: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
-                        <br>Rechten: Actions (write), Contents (write), Metadata (read)
-                    </small>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-secondary" onclick="closeGitHubConfig()">Annuleren</button>
-                    <button type="button" class="btn btn-primary" onclick="saveGitHubConfig()">Opslaan</button>
-                    <button type="button" class="btn" onclick="clearGitHubConfig()" style="background: #e74c3c; color: white;">Reset</button>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            document.getElementById('overlay').style.display = 'block';
-        }
-
-        // Save GitHub configuration
-        function saveGitHubConfig() {
-            const repo = document.getElementById('githubRepo').value.trim();
-            const token = document.getElementById('githubToken').value.trim();
-            
-            if (!repo || !token) {
-                alert('Vul alle velden in');
-                return;
-            }
-            
-            // Clean repo name (remove https:// if present)
-            const cleanRepo = repo.replace(/^https:\/\/github\.com\//, '');
-            
-            localStorage.setItem('github-repo', cleanRepo);
-            localStorage.setItem('github-token', token);
-            
-            closeGitHubConfig();
-            showNotification('GitHub configuratie opgeslagen!');
-        }
-
-        // Clear GitHub configuration
-        function clearGitHubConfig() {
-            if (confirm('Weet je zeker dat je de GitHub configuratie wilt wissen?')) {
-                localStorage.removeItem('github-repo');
-                localStorage.removeItem('github-token');
-                closeGitHubConfig();
-                showNotification('GitHub configuratie gewist!');
-            }
-        }
-
-        // Close GitHub config modal
-        function closeGitHubConfig() {
-            const modal = document.getElementById('githubConfigModal');
-            if (modal) {
-                modal.remove();
-            }
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        // Auto-refresh data from GitHub
-        async function refreshFromGitHub() {
-            showNotification('🔄 Data verversen...');
-            const loaded = await loadFromGitHub();
-            if (loaded) {
-                renderSections();
-                updateCategoryOptions();
-                showNotification('✅ Data ververst van GitHub!');
-            } else {
-                showNotification('❌ Kon data niet verversen');
-            }
-        }
-
-        function resetToDefaults() {
-            sections = [...defaultSections];
-            links = [...defaultLinks];
-            linkIdCounter = 16;
-            saveToStorage();
-        }
-
-        // Admin mode with session-based authentication
-        function toggleAdmin() {
-            if (!isAdminMode) {
-                // Check if user is already authenticated this session
-                const isAuthenticated = sessionStorage.getItem('admin-authenticated') === 'true';
-                
-                if (isAuthenticated) {
-                    activateAdminMode();
-                } else {
-                    showPasswordModal();
-                }
-            } else {
-                deactivateAdminMode();
-            }
-        }
-
-        function showPasswordModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.id = 'passwordModal';
-            modal.style.display = 'block';
-            modal.innerHTML = `
-                <h2>🔐 Beheer Toegang</h2>
-                <p>Voer het beheerder wachtwoord in:</p>
-                <div class="form-group">
-                    <label for="adminPassword">Wachtwoord:</label>
-                    <input type="password" id="adminPassword" placeholder="Beheerder wachtwoord" autofocus>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Annuleren</button>
-                    <button type="button" class="btn btn-primary" onclick="checkPassword()">Toegang</button>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            document.getElementById('overlay').style.display = 'block';
-            
-            // Enter key support
-            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    checkPassword();
-                }
-            });
-        }
-
-        function checkPassword() {
-            const password = document.getElementById('adminPassword').value;
-            
-            // Admin password for IPC team
-            const ADMIN_PASSWORD = 'IPC2025!';
-            
-            if (password === ADMIN_PASSWORD) {
-                // Store authentication for this session only
-                sessionStorage.setItem('admin-authenticated', 'true');
-                
-                closePasswordModal();
-                activateAdminMode();
-                showNotification('✅ Beheer modus geactiveerd!');
-            } else {
-                showNotification('❌ Onjuist wachtwoord!');
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('adminPassword').focus();
-            }
-        }
-
-        function closePasswordModal() {
-            const modal = document.getElementById('passwordModal');
-            if (modal) {
-                modal.remove();
-            }
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        function activateAdminMode() {
-            isAdminMode = true;
-            const adminBar = document.getElementById('adminBar');
-            const adminToggle = document.querySelector('.admin-toggle');
-            
-            adminBar.classList.add('active');
-            adminToggle.classList.add('active');
-            document.body.classList.add('edit-mode');
-            
-            // Re-render to enable dragging
-            renderSections();
-        }
-
-        function deactivateAdminMode() {
-            isAdminMode = false;
-            const adminBar = document.getElementById('adminBar');
-            const adminToggle = document.querySelector('.admin-toggle');
-            
-            adminBar.classList.remove('active');
-            adminToggle.classList.remove('active');
-            document.body.classList.remove('edit-mode');
-            
-            // Clear session authentication
-            sessionStorage.removeItem('admin-authenticated');
-            
-            // Re-render to disable dragging
-            renderSections();
-        }
-
-        // Modal management
-        function openAddForm() {
-            if (!isAdminMode) {
-                showNotification('⚠️ Ga eerst naar beheer modus om links toe te voegen');
-                return;
-            }
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('addModal').style.display = 'block';
-        }
-
-        function openSectionForm() {
-            if (!isAdminMode) {
-                showNotification('⚠️ Ga eerst naar beheer modus om secties toe te voegen');
-                return;
-            }
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('sectionModal').style.display = 'block';
-        }
-
-        function closeModals() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('addModal').style.display = 'none';
-            document.getElementById('sectionModal').style.display = 'none';
-            document.getElementById('editModal').style.display = 'none';
-            
-            // Reset forms
-            document.getElementById('linkForm').reset();
-            document.getElementById('sectionForm').reset();
-            document.getElementById('editForm').reset();
-            
-            editingItem = null;
-            editingType = null;
-        }
-
-        // CRUD operations
-        function editSection(button) {
-            if (!isAdminMode) return;
-            
-            const section = button.closest('.section');
-            const category = section.dataset.category;
-            const sectionData = sections.find(s => s.id === category);
-            
-            if (!sectionData) return;
-            
-            editingItem = section;
-            editingType = 'section';
-            
-            document.getElementById('editFormContent').innerHTML = `
-                <div class="form-group">
-                    <label for="editSectionTitle">Sectie titel:</label>
-                    <input type="text" id="editSectionTitle" name="title" value="${sectionData.title}" required>
-                </div>
-                <div class="form-group">
-                    <label for="editSectionId">Sectie ID:</label>
-                    <input type="text" id="editSectionId" name="id" value="${sectionData.id}" required>
-                </div>
-                <div class="form-group">
-                    <label for="editSectionIcon">Icoon SVG path:</label>
-                    <textarea id="editSectionIcon" name="icon" rows="3">${sectionData.icon}</textarea>
-                </div>
-            `;
-            
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        function deleteSection(button) {
-            if (!isAdminMode) return;
-            
-            if (confirm('Weet je zeker dat je deze sectie wilt verwijderen?')) {
-                const section = button.closest('.section');
-                const category = section.dataset.category;
-                
-                sections = sections.filter(s => s.id !== category);
-                links = links.filter(l => l.category !== category);
-                
-                saveToStorage();
-                renderSections();
-                updateCategoryOptions();
-                showNotification('Sectie verwijderd!');
-            }
-        }
-
-        function editLink(button) {
-            if (!isAdminMode) return;
-            
-            const linkItem = button.closest('.link-item');
-            const linkId = parseInt(linkItem.dataset.linkId);
-            const linkData = links.find(l => l.id === linkId);
-            
-            if (!linkData) return;
-            
-            editingItem = linkItem;
-            editingType = 'link';
-            
-            document.getElementById('editFormContent').innerHTML = `
                 <div class="form-group">
                     <label for="editLinkTitle">Titel:</label>
                     <input type="text" id="editLinkTitle" name="title" value="${linkData.title}" required>
@@ -1899,14 +1660,91 @@
             document.getElementById('intranetSuggestions').style.display = 'none';
         }
 
+        // AFD search functions
+        function showAFDSuggestions(query) {
+            const suggestions = [
+                { text: `"${query}" in AFD datacatalogus`, type: 'Zoeken', icon: '🔍', action: 'search' },
+                { text: `${query} - Regelgeving`, type: 'Regelgeving', icon: '📋', action: 'search', category: 'regelgeving' },
+                { text: `${query} - Standaarden`, type: 'Standaard', icon: '📏', action: 'search', category: 'standaard' },
+                { text: `${query} - Definities`, type: 'Definitie', icon: '📖', action: 'search', category: 'definitie' },
+                { text: `${query} - Attributen`, type: 'Attribuut', icon: '🏷️', action: 'search', category: 'attribuut' },
+                { text: `${query} - Domeinwaarden`, type: 'Domein', icon: '🔢', action: 'search', category: 'domein' }
+            ];
+            
+            const suggestionsContainer = document.getElementById('afdSuggestions');
+            suggestionsContainer.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const suggestionElement = document.createElement('div');
+                suggestionElement.className = 'search-suggestion';
+                suggestionElement.innerHTML = `
+                    <span class="suggestion-icon">${suggestion.icon}</span>
+                    <span class="suggestion-text">${suggestion.text}</span>
+                    <span class="suggestion-type">${suggestion.type}</span>
+                `;
+                
+                suggestionElement.addEventListener('click', function() {
+                    performAFDSearch(query, suggestion.action, suggestion.category);
+                });
+                
+                suggestionsContainer.appendChild(suggestionElement);
+            });
+            
+            suggestionsContainer.style.display = 'block';
+        }
+
+        function hideAFDSuggestions() {
+            document.getElementById('afdSuggestions').style.display = 'none';
+        }
+
+        function performAFDSearch(query, action = 'search', category = null) {
+            const baseUrl = 'https://inpactsolutions.github.io/afd-datacatalogus/';
+            let targetUrl = baseUrl;
+            
+            // AFD specifieke URL parameters (gebaseerd op typische datacatalogus implementaties)
+            if (action === 'search') {
+                if (category) {
+                    // Zoek met categorie filter
+                    targetUrl = `${baseUrl}?search=${encodeURIComponent(query)}&type=${category}`;
+                } else {
+                    // Algemene zoekterm
+                    targetUrl = `${baseUrl}?search=${encodeURIComponent(query)}`;
+                }
+            }
+            
+            // Fallback: probeer verschillende parameter combinaties
+            const alternativeParams = [
+                `?q=${encodeURIComponent(query)}`,
+                `?query=${encodeURIComponent(query)}`,
+                `?term=${encodeURIComponent(query)}`,
+                `?filter=${encodeURIComponent(query)}`
+            ];
+            
+            // Als geen specifieke categorie, probeer eerste alternatief
+            if (!category && action === 'search') {
+                targetUrl = baseUrl + alternativeParams[0];
+            }
+            
+            // Open in nieuwe tab
+            window.open(targetUrl, '_blank');
+            
+            // Clear AFD search and hide suggestions
+            document.getElementById('afdSearchInput').value = '';
+            hideAFDSuggestions();
+            
+            // Toon AFD-specifieke notificatie
+            const categoryText = category ? ` (${category})` : '';
+            showNotification(`📊 AFD zoeken naar: "${query}"${categoryText}`);
+        }
+
         // Google search functions
         function showGoogleSuggestions(query) {
             const suggestions = [
-                { text: `"${query}"`, type: 'Exacte match', icon: '🎯' },
-                { text: `${query} filetype:pdf`, type: 'PDF bestanden', icon: '📄' },
-                { text: `${query} site:github.com`, type: 'GitHub', icon: '💻' },
-                { text: `${query} -site:stackoverflow.com`, type: 'Exclusief SO', icon: '🚫' },
-                { text: query, type: 'Zoeken', icon: '🔍' }
+                { text: query, type: 'Google', icon: '🔍', action: 'search' },
+                { text: `"${query}"`, type: 'Exacte match', icon: '🎯', action: 'exact' },
+                { text: `${query} -site:stackoverflow.com`, type: 'Exclusief SO', icon: '🚫', action: 'exclude' },
+                { text: `${query} filetype:pdf`, type: 'PDF bestanden', icon: '📄', action: 'filetype', filetype: 'pdf' },
+                { text: `${query} site:github.com`, type: 'GitHub', icon: '💻', action: 'site', site: 'github.com' }
             ];
             
             const suggestionsContainer = document.getElementById('googleSuggestions');
@@ -1936,38 +1774,9 @@
         }
 
         function performGoogleSearch(query) {
-            // Clear previous results
-            const resultsContainer = document.getElementById('googleResults');
-            resultsContainer.innerHTML = '';
-            
-            // Show loading state
-            resultsContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;"><div style="font-size: 24px;">⏳</div><div>Zoeken...</div></div>';
-            resultsContainer.classList.add('visible');
-            
-            // Trigger Google CSE search
-            if (typeof google !== 'undefined' && google.search && google.search.cse) {
-                try {
-                    google.search.cse.element.render({
-                        div: "googleResults",
-                        tag: 'searchresults-only',
-                        attributes: {
-                            queryParameterName: 'query',
-                            defaultToRefinement: query
-                        }
-                    });
-                    
-                    // Execute the search
-                    google.search.cse.element.go();
-                    
-                } catch (error) {
-                    console.error('Google CSE search error:', error);
-                    // Fallback to regular Google search
-                    fallbackGoogleSearch(query);
-                }
-            } else {
-                // Fallback to regular Google search
-                fallbackGoogleSearch(query);
-            }
+            // Direct fallback to Google search - CSE is complex to integrate properly
+            const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+            window.open(googleUrl, '_blank');
             
             // Clear search input and hide suggestions
             document.getElementById('googleSearchInput').value = '';
@@ -1978,65 +1787,15 @@
         }
 
         function fallbackGoogleSearch(query) {
+            // This function is now unused but kept for compatibility
             const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
             window.open(googleUrl, '_blank');
-            
-            // Hide results container
-            document.getElementById('googleResults').classList.remove('visible');
         }
 
-        // Initialize Google CSE
+        // Initialize Google CSE (simplified - just for potential future use)
         function initializeGoogleCSE() {
-            setTimeout(() => {
-                if (typeof google !== 'undefined' && google.search && google.search.cse) {
-                    console.log('Google CSE initialized successfully');
-                } else {
-                    console.log('Google CSE not available, using fallback');
-                }
-            }, 2000);
-        }
-
-        // AFD search functions
-        function showAFDSuggestions(query) {
-            const suggestions = [
-                { text: `Direct zoeken: "${query}"`, type: 'AFD Zoeken', icon: '🔍', action: 'search' },
-                { text: `${query} in regelgeving`, type: 'Regelgeving', icon: '📋', action: 'filter', filter: 'regelgeving' },
-                { text: `${query} in standaarden`, type: 'Standaarden', icon: '📏', action: 'filter', filter: 'standaard' },
-                { text: `${query} in documentatie`, type: 'Docs', icon: '📄', action: 'filter', filter: 'documentatie' },
-                { text: `Open AFD tool`, type: 'Ga naar AFD', icon: '🚀', action: 'open' }
-            ];
-            
-            const suggestionsContainer = document.getElementById('afdSuggestions');
-            suggestionsContainer.innerHTML = '';
-            
-            suggestions.forEach(suggestion => {
-                const suggestionElement = document.createElement('div');
-                suggestionElement.className = 'search-suggestion';
-                suggestionElement.innerHTML = `
-                    <span class="suggestion-icon">${suggestion.icon}</span>
-                    <span class="suggestion-text">${suggestion.text}</span>
-                    <span class="suggestion-type">${suggestion.type}</span>
-                `;
-                
-                suggestionElement.addEventListener('click', function() {
-                    performAFDSearch(query, suggestion.action, suggestion.filter);
-                });
-                
-                suggestionsContainer.appendChild(suggestionElement);
-            });
-            
-            suggestionsContainer.style.display = 'block';
-        }
-
-        function hideAFDSuggestions() {
-            document.getElementById('afdSuggestions').style.display = 'none';
-        }
-
-        function performGoogleSearch(query) {
-            // This function is no longer needed as Google CSE handles the search
-            // But we keep it for backwards compatibility
-            const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-            window.open(googleUrl, '_blank');
+            // CSE integration removed for now - using direct Google search
+            console.log('Google search via direct URL redirect');
         }
 
         // Form submissions
@@ -2258,63 +2017,6 @@
             }, 3000);
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Try to load from GitHub first, then localStorage, then defaults
-            let dataLoaded = false;
-            
-            // First try GitHub Pages
-            dataLoaded = await loadFromGitHub();
-            
-            // Fallback to localStorage
-            if (!dataLoaded) {
-                dataLoaded = loadFromStorage();
-            }
-            
-            // Final fallback to defaults
-            if (!dataLoaded) {
-                resetToDefaults();
-            }
-            
-            // Ensure all links have tags
-            links.forEach(link => {
-                if (!link.tags) link.tags = [];
-            });
-            
-            renderSections();
-            updateCategoryOptions();
-            
-            // Load weather with fallback
-            loadWeather();
-            
-            // Initialize time and update every second
-            updateTime();
-            setInterval(updateTime, 1000);
-            
-            // Refresh weather every 30 minutes
-            setInterval(loadWeather, 30 * 60 * 1000);
-            
-            // Setup search functionality
-            setupSearchFunctionality();
-            
-            // Handle link clicks - prevent drag from triggering navigation
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.link-control-btn') || e.target.closest('.drag-handle')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return;
-                }
-                
-                if (e.target.closest('.link-item')) {
-                    const linkItem = e.target.closest('.link-item');
-                    if (!linkItem.href || linkItem.href === '#') {
-                        e.preventDefault();
-                        showNotification('Link nog niet geconfigureerd!');
-                    }
-                }
-            });
-        });
-
         function setupSearchFunctionality() {
             // Intranet search
             document.getElementById('intranetSearchInput').addEventListener('input', function(e) {
@@ -2404,15 +2106,353 @@
                 if (!e.target.closest('#googleSearchInput') && !e.target.closest('#googleSuggestions')) {
                     hideGoogleSuggestions();
                 }
-                // Hide Google results when clicking outside
-                if (!e.target.closest('#googleResults') && !e.target.closest('#googleSearchInput')) {
-                    document.getElementById('googleResults').classList.remove('visible');
-                }
             });
             
             // Initialize Google CSE
             initializeGoogleCSE();
         }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Try to load from GitHub first, then localStorage, then defaults
+            let dataLoaded = false;
+            
+            // First try GitHub Pages
+            dataLoaded = await loadFromGitHub();
+            
+            // Fallback to localStorage
+            if (!dataLoaded) {
+                dataLoaded = loadFromStorage();
+            }
+            
+            // Final fallback to defaults
+            if (!dataLoaded) {
+                resetToDefaults();
+            }
+            
+            // Ensure all links have tags
+            links.forEach(link => {
+                if (!link.tags) link.tags = [];
+            });
+            
+            renderSections();
+            updateCategoryOptions();
+            
+            // Load weather with fallback
+            loadWeather();
+            
+            // Initialize time and update every second
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Refresh weather every 30 minutes
+            setInterval(loadWeather, 30 * 60 * 1000);
+            
+            // Setup search functionality
+            setupSearchFunctionality();
+            
+            // Handle link clicks - prevent drag from triggering navigation
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.link-control-btn') || e.target.closest('.drag-handle')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+                
+                if (e.target.closest('.link-item')) {
+                    const linkItem = e.target.closest('.link-item');
+                    if (!linkItem.href || linkItem.href === '#') {
+                        e.preventDefault();
+                        showNotification('Link nog niet geconfigureerd!');
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
+                    <label for="githubRepo">Repository (bijv: username/repo-name):</label>
+                    <input type="text" id="githubRepo" placeholder="InpactSolutions/IPC-Intranet" 
+                           value="${localStorage.getItem('github-repo') || ''}">
+                    <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                        Alleen de repository naam, NIET de volledige URL
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="githubToken">Personal Access Token:</label>
+                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx"
+                           value="${localStorage.getItem('github-token') || ''}">
+                    <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                        Maak een token op: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
+                        <br>Rechten: Actions (write), Contents (write), Metadata (read)
+                    </small>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeGitHubConfig()">Annuleren</button>
+                    <button type="button" class="btn btn-primary" onclick="saveGitHubConfig()">Opslaan</button>
+                    <button type="button" class="btn" onclick="clearGitHubConfig()" style="background: #e74c3c; color: white;">Reset</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        // Save GitHub configuration
+        function saveGitHubConfig() {
+            const repo = document.getElementById('githubRepo').value.trim();
+            const token = document.getElementById('githubToken').value.trim();
+            
+            if (!repo || !token) {
+                alert('Vul alle velden in');
+                return;
+            }
+            
+            // Clean repo name (remove https:// if present)
+            const cleanRepo = repo.replace(/^https:\/\/github\.com\//, '');
+            
+            localStorage.setItem('github-repo', cleanRepo);
+            localStorage.setItem('github-token', token);
+            
+            closeGitHubConfig();
+            showNotification('GitHub configuratie opgeslagen!');
+        }
+
+        // Clear GitHub configuration
+        function clearGitHubConfig() {
+            if (confirm('Weet je zeker dat je de GitHub configuratie wilt wissen?')) {
+                localStorage.removeItem('github-repo');
+                localStorage.removeItem('github-token');
+                closeGitHubConfig();
+                showNotification('GitHub configuratie gewist!');
+            }
+        }
+
+        // Close GitHub config modal
+        function closeGitHubConfig() {
+            const modal = document.getElementById('githubConfigModal');
+            if (modal) {
+                modal.remove();
+            }
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Auto-refresh data from GitHub
+        async function refreshFromGitHub() {
+            showNotification('🔄 Data verversen...');
+            const loaded = await loadFromGitHub();
+            if (loaded) {
+                renderSections();
+                updateCategoryOptions();
+                showNotification('✅ Data ververst van GitHub!');
+            } else {
+                showNotification('❌ Kon data niet verversen');
+            }
+        }
+
+        function resetToDefaults() {
+            sections = [...defaultSections];
+            links = [...defaultLinks];
+            linkIdCounter = 16;
+            saveToStorage();
+        }
+
+        // Admin mode with session-based authentication
+        function toggleAdmin() {
+            if (!isAdminMode) {
+                // Check if user is already authenticated this session
+                const isAuthenticated = sessionStorage.getItem('admin-authenticated') === 'true';
+                
+                if (isAuthenticated) {
+                    activateAdminMode();
+                } else {
+                    showPasswordModal();
+                }
+            } else {
+                deactivateAdminMode();
+            }
+        }
+
+        function showPasswordModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'passwordModal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <h2>🔐 Beheer Toegang</h2>
+                <p>Voer het beheerder wachtwoord in:</p>
+                <div class="form-group">
+                    <label for="adminPassword">Wachtwoord:</label>
+                    <input type="password" id="adminPassword" placeholder="Beheerder wachtwoord" autofocus>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Annuleren</button>
+                    <button type="button" class="btn btn-primary" onclick="checkPassword()">Toegang</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.getElementById('overlay').style.display = 'block';
+            
+            // Enter key support
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        }
+
+        function checkPassword() {
+            const password = document.getElementById('adminPassword').value;
+            
+            // Admin password for IPC team
+            const ADMIN_PASSWORD = 'IPC2025!';
+            
+            if (password === ADMIN_PASSWORD) {
+                // Store authentication for this session only
+                sessionStorage.setItem('admin-authenticated', 'true');
+                
+                closePasswordModal();
+                activateAdminMode();
+                showNotification('✅ Beheer modus geactiveerd!');
+            } else {
+                showNotification('❌ Onjuist wachtwoord!');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
+            }
+        }
+
+        function closePasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            if (modal) {
+                modal.remove();
+            }
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function activateAdminMode() {
+            isAdminMode = true;
+            const adminBar = document.getElementById('adminBar');
+            const adminToggle = document.querySelector('.admin-toggle');
+            
+            adminBar.classList.add('active');
+            adminToggle.classList.add('active');
+            document.body.classList.add('edit-mode');
+            
+            // Re-render to enable dragging
+            renderSections();
+        }
+
+        function deactivateAdminMode() {
+            isAdminMode = false;
+            const adminBar = document.getElementById('adminBar');
+            const adminToggle = document.querySelector('.admin-toggle');
+            
+            adminBar.classList.remove('active');
+            adminToggle.classList.remove('active');
+            document.body.classList.remove('edit-mode');
+            
+            // Clear session authentication
+            sessionStorage.removeItem('admin-authenticated');
+            
+            // Re-render to disable dragging
+            renderSections();
+        }
+
+        // Modal management
+        function openAddForm() {
+            if (!isAdminMode) {
+                showNotification('⚠️ Ga eerst naar beheer modus om links toe te voegen');
+                return;
+            }
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('addModal').style.display = 'block';
+        }
+
+        function openSectionForm() {
+            if (!isAdminMode) {
+                showNotification('⚠️ Ga eerst naar beheer modus om secties toe te voegen');
+                return;
+            }
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('sectionModal').style.display = 'block';
+        }
+
+        function closeModals() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('addModal').style.display = 'none';
+            document.getElementById('sectionModal').style.display = 'none';
+            document.getElementById('editModal').style.display = 'none';
+            
+            // Reset forms
+            document.getElementById('linkForm').reset();
+            document.getElementById('sectionForm').reset();
+            document.getElementById('editForm').reset();
+            
+            editingItem = null;
+            editingType = null;
+        }
+
+        // CRUD operations
+        function editSection(button) {
+            if (!isAdminMode) return;
+            
+            const section = button.closest('.section');
+            const category = section.dataset.category;
+            const sectionData = sections.find(s => s.id === category);
+            
+            if (!sectionData) return;
+            
+            editingItem = section;
+            editingType = 'section';
+            
+            document.getElementById('editFormContent').innerHTML = `
+                <div class="form-group">
+                    <label for="editSectionTitle">Sectie titel:</label>
+                    <input type="text" id="editSectionTitle" name="title" value="${sectionData.title}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editSectionId">Sectie ID:</label>
+                    <input type="text" id="editSectionId" name="id" value="${sectionData.id}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editSectionIcon">Icoon SVG path:</label>
+                    <textarea id="editSectionIcon" name="icon" rows="3">${sectionData.icon}</textarea>
+                </div>
+            `;
+            
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function deleteSection(button) {
+            if (!isAdminMode) return;
+            
+            if (confirm('Weet je zeker dat je deze sectie wilt verwijderen?')) {
+                const section = button.closest('.section');
+                const category = section.dataset.category;
+                
+                sections = sections.filter(s => s.id !== category);
+                links = links.filter(l => l.category !== category);
+                
+                saveToStorage();
+                renderSections();
+                updateCategoryOptions();
+                showNotification('Sectie verwijderd!');
+            }
+        }
+
+        function editLink(button) {
+            if (!isAdminMode) return;
+            
+            const linkItem = button.closest('.link-item');
+            const linkId = parseInt(linkItem.dataset.linkId);
+            const linkData = links.find(l => l.id === linkId);
+            
+            if (!linkData) return;
+            
+            editingItem = linkItem;
+            editingType = 'link';
+            
+            document.getElementById('editFormContent').innerHTML = `
+                <div class="form-group">
