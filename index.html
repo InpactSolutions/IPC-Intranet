@@ -1250,6 +1250,9 @@
             adminBar.classList.add('active');
             adminToggle.classList.add('active');
             document.body.classList.add('edit-mode');
+            
+            // Re-render to enable dragging
+            renderSections();
         }
 
         function deactivateAdminMode() {
@@ -1263,6 +1266,9 @@
             
             // Clear session authentication
             sessionStorage.removeItem('admin-authenticated');
+            
+            // Re-render to disable dragging
+            renderSections();
         }
 
         // Modal management
@@ -1433,7 +1439,7 @@
             
             sections.forEach((section, index) => {
                 const sectionHTML = `
-                    <div class="section" data-category="${section.id}" draggable="true" data-section-index="${index}">
+                    <div class="section" data-category="${section.id}" data-section-index="${index}">
                         <div class="section-controls">
                             <button class="control-btn" onclick="editSection(this)" title="Bewerk sectie">✏️</button>
                             <button class="control-btn" onclick="deleteSection(this)" title="Verwijder sectie">🗑️</button>
@@ -1465,7 +1471,7 @@
             if (linksGrid) {
                 const linkIndex = links.findIndex(l => l.id === link.id);
                 const linkHTML = `
-                    <a href="${link.url}" class="link-item" data-link-id="${link.id}" data-link-index="${linkIndex}" draggable="true" target="_blank">
+                    <a href="${link.url}" class="link-item" data-link-id="${link.id}" data-link-index="${linkIndex}" target="_blank">
                         <span class="drag-handle" title="Versleep link">⋮⋮</span>
                         <svg class="link-icon" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -1492,7 +1498,13 @@
             });
         }
 
-        // Drag and Drop functionality
+        function updateCategoryOptions() {
+            const categorySelect = document.getElementById('linkCategory');
+            categorySelect.innerHTML = '<option value="">Selecteer categorie</option>';
+            sections.forEach(section => {
+                categorySelect.innerHTML += `<option value="${section.id}">${section.title}</option>`;
+            });
+        }
         function setupDragAndDrop() {
             // Only enable drag and drop in admin mode
             if (!isAdminMode) return;
