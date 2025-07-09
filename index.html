@@ -1815,7 +1815,7 @@
             });
         }
 
-        // Ultra simple drag and drop test
+        // Ultra simple drag and drop - remove handle requirement
         function setupDragAndDrop() {
             console.log('Setting up drag and drop, admin mode:', isAdminMode);
             
@@ -1830,33 +1830,45 @@
                 linkItem.draggable = true;
                 console.log('Made link draggable:', linkItem.dataset.linkId);
                 
-                // Track if we clicked on the drag handle
-                let dragFromHandle = false;
+                // Track drag state per link
+                let isDragEnabled = false;
                 
-                // Add mousedown listener to drag handle
+                // Add click listener to drag handle to enable dragging
                 const dragHandle = linkItem.querySelector('.drag-handle');
                 if (dragHandle) {
-                    dragHandle.addEventListener('mousedown', function(e) {
-                        dragFromHandle = true;
-                        console.log('🖱️ Mouse down on drag handle for link:', linkItem.dataset.linkId);
+                    console.log('Found drag handle for link:', linkItem.dataset.linkId);
+                    
+                    dragHandle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
                         
-                        // Reset flag after short delay
+                        isDragEnabled = true;
+                        console.log('🖱️ DRAG ENABLED for link:', linkItem.dataset.linkId);
+                        
+                        // Visual feedback
+                        linkItem.style.border = '2px dashed #00ff00';
+                        linkItem.style.cursor = 'move';
+                        
+                        // Auto-disable after 3 seconds
                         setTimeout(() => {
-                            dragFromHandle = false;
-                        }, 200);
+                            isDragEnabled = false;
+                            linkItem.style.border = '';
+                            linkItem.style.cursor = '';
+                            console.log('⏰ DRAG DISABLED for link:', linkItem.dataset.linkId);
+                        }, 3000);
                     });
+                } else {
+                    console.log('❌ No drag handle found for link:', linkItem.dataset.linkId);
                 }
                 
-                // Add dragstart listener directly to each link
+                // Add dragstart listener - no restrictions
                 linkItem.addEventListener('dragstart', function(e) {
                     console.log('🔥 DRAGSTART FIRED for link:', linkItem.dataset.linkId);
-                    console.log('🖱️ Drag from handle:', dragFromHandle);
-                    console.log('🎯 Event target:', e.target);
-                    console.log('🎯 Closest drag-handle:', e.target.closest('.drag-handle'));
+                    console.log('🎯 Drag enabled:', isDragEnabled);
                     
-                    // Allow drag if we recently clicked on handle OR if target is handle
-                    if (!dragFromHandle && !e.target.closest('.drag-handle')) {
-                        console.log('❌ Prevented - not from handle');
+                    // Only allow if drag is enabled
+                    if (!isDragEnabled) {
+                        console.log('❌ Prevented - drag not enabled (click ⋮⋮ first)');
                         e.preventDefault();
                         return;
                     }
@@ -1915,13 +1927,15 @@
                 linkItem.addEventListener('dragend', function(e) {
                     console.log('🔥 DRAGEND FIRED for link:', linkItem.dataset.linkId);
                     
-                    // Reset flag
-                    dragFromHandle = false;
+                    // Reset drag state
+                    isDragEnabled = false;
                     
                     // Reset all styling
                     document.querySelectorAll('.link-item').forEach(link => {
                         link.style.opacity = '';
                         link.style.backgroundColor = '';
+                        link.style.border = '';
+                        link.style.cursor = '';
                     });
                     
                     draggedElement = null;
