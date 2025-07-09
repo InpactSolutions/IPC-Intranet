@@ -1549,15 +1549,6 @@
                         
                         console.log(`✅ Drag handle setup complete for link ${index}`);
                         
-                        dragHandle.addEventListener('dragstart', function(e) {
-                            console.log('🔗 Link drag started via handle!');
-                            draggedElement = link;
-                            draggedType = 'link';
-                            link.classList.add('dragging');
-                            e.dataTransfer.setData('text/plain', link.dataset.linkId);
-                            e.stopPropagation(); // Prevent section drag
-                        });
-                        
                         // Test if click events work
                         dragHandle.addEventListener('click', function(e) {
                             console.log('🔗 Drag handle clicked!');
@@ -1570,9 +1561,28 @@
                             e.preventDefault();
                             e.stopPropagation();
                         });
+                        
+                        // Add dragstart to the handle itself
+                        dragHandle.addEventListener('dragstart', function(e) {
+                            console.log('🔗 Link drag started via handle!');
+                            draggedElement = link;
+                            draggedType = 'link';
+                            link.classList.add('dragging');
+                            e.dataTransfer.setData('text/plain', link.dataset.linkId);
+                            e.stopPropagation(); // Prevent section drag
+                        });
+                        
                     } else {
                         console.warn(`❌ No drag handle found for link ${index}`);
                     }
+                    
+                    // Also prevent section drag when starting from within a link
+                    link.addEventListener('dragstart', function(e) {
+                        if (e.target.closest('.drag-handle')) {
+                            console.log('🔗 Link drag started from within link!');
+                            e.stopPropagation(); // Prevent section drag
+                        }
+                    });
                     
                     link.addEventListener('dragover', function(e) {
                         if (draggedType === 'link') {
