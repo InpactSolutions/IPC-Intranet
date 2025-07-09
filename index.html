@@ -206,43 +206,58 @@
             width: 250px;
         }
 
+        /* Enhanced Google CSE styling */
         .google-search-container {
             position: relative;
             width: 100%;
-            max-width: 500px;
+            max-width: 300px;
+            z-index: 100000;
         }
 
-        .gcse-search {
-            background: transparent !important;
-        }
-
-        .gcse-search .gsc-search-box {
+        .gcse-searchbox-only {
             background: transparent !important;
             border: none !important;
         }
 
-        .gcse-search .gsc-input {
+        .gcse-searchbox-only table {
+            background: transparent !important;
+        }
+
+        .gcse-searchbox-only .gsc-search-box {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .gcse-searchbox-only .gsc-input-box {
             background: rgba(255, 255, 255, 0.15) !important;
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
             border-radius: 12px !important;
+            backdrop-filter: blur(10px);
+            height: 44px !important;
+        }
+
+        .gcse-searchbox-only .gsc-input {
+            background: transparent !important;
+            border: none !important;
             color: white !important;
             padding: 12px 16px !important;
             font-size: 14px !important;
-            backdrop-filter: blur(10px);
+            height: 44px !important;
+            line-height: 20px !important;
         }
 
-        .gcse-search .gsc-input::placeholder {
+        .gcse-searchbox-only .gsc-input::placeholder {
             color: rgba(255, 255, 255, 0.6) !important;
         }
 
-        .gcse-search .gsc-input:focus {
+        .gcse-searchbox-only .gsc-input:focus {
             outline: none !important;
             background: rgba(255, 255, 255, 0.25) !important;
             border-color: rgba(66, 133, 244, 0.8) !important;
             box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2) !important;
         }
 
-        .gcse-search .gsc-search-button {
+        .gcse-searchbox-only .gsc-search-button {
             background: rgba(66, 133, 244, 0.8) !important;
             border: none !important;
             border-radius: 8px !important;
@@ -250,13 +265,35 @@
             margin-left: 8px !important;
             color: white !important;
             font-size: 12px !important;
+            height: 36px !important;
+            min-width: 60px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
-        .gcse-search .gsc-search-button:hover {
+        .gcse-searchbox-only .gsc-search-button:hover {
             background: rgba(66, 133, 244, 1) !important;
         }
 
-        .gcse-search .gsc-results-wrapper-overlay {
+        .gcse-searchbox-only .gsc-search-button-v2 {
+            background: rgba(66, 133, 244, 0.8) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 8px 16px !important;
+            margin-left: 8px !important;
+            color: white !important;
+            font-size: 12px !important;
+            height: 36px !important;
+            min-width: 60px !important;
+        }
+
+        .gcse-searchbox-only .gsc-search-button-v2:hover {
+            background: rgba(66, 133, 244, 1) !important;
+        }
+
+        /* Results styling */
+        .gsc-results-wrapper-overlay {
             background: rgba(255, 255, 255, 0.98) !important;
             backdrop-filter: blur(20px) !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -264,15 +301,13 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
             z-index: 99999 !important;
             margin-top: 4px !important;
+            max-height: 400px !important;
+            overflow-y: auto !important;
         }
 
-        .gcse-search .gsc-results-wrapper-overlay .gsc-results {
+        .gsc-results-wrapper-overlay .gsc-results {
             background: transparent !important;
-        }
-
-        .google-search-wrapper {
-            position: relative;
-            z-index: 100000;
+            padding: 12px !important;
         }
 
         .search-box.intranet-search {
@@ -833,6 +868,10 @@
             .search-box:focus {
                 width: 220px;
             }
+            
+            .google-search-container {
+                max-width: 220px;
+            }
         }
 
         @media (max-width: 1200px) {
@@ -874,6 +913,10 @@
             .search-box:focus {
                 width: 240px;
             }
+            
+            .google-search-container {
+                max-width: 240px;
+            }
         }
 
         @media (max-width: 1024px) {
@@ -888,6 +931,10 @@
             
             .search-box:focus {
                 width: 300px;
+            }
+            
+            .google-search-container {
+                max-width: 300px;
             }
         }
 
@@ -956,6 +1003,10 @@
             
             .search-box:focus {
                 width: 100%;
+            }
+            
+            .google-search-container {
+                max-width: 250px;
             }
 
             .main-grid {
@@ -1072,9 +1123,8 @@
                     
                     <div class="search-box-wrapper">
                         <span class="search-label">🌐 Google:</span>
-                        <div class="search-input-container">
-                            <input type="text" class="search-box google-search" placeholder="Zoek op Google..." id="googleSearchInput">
-                            <div class="search-suggestions" id="googleSuggestions"></div>
+                        <div class="google-search-container">
+                            <div class="gcse-searchbox-only" data-resultsUrl="https://www.google.com/search" data-newWindow="true" data-queryParameterName="q"></div>
                         </div>
                     </div>
                 </div>
@@ -1169,7 +1219,6 @@
 
         // Search timeouts
         let intranetSearchTimeout = null;
-        let googleSearchTimeout = null;
         let afdSearchTimeout = null;
 
         // Default data
@@ -1956,42 +2005,6 @@
             document.getElementById('intranetSuggestions').style.display = 'none';
         }
 
-        // Google search functions
-        function showGoogleSuggestions(query) {
-            const suggestions = [
-                { text: query, type: 'Google', icon: '🔍', action: 'search' },
-                { text: `"${query}"`, type: 'Exacte match', icon: '🎯', action: 'exact' },
-                { text: `${query} -site:stackoverflow.com`, type: 'Exclusief SO', icon: '🚫', action: 'exclude' },
-                { text: `${query} filetype:pdf`, type: 'PDF bestanden', icon: '📄', action: 'filetype', filetype: 'pdf' },
-                { text: `${query} site:github.com`, type: 'GitHub', icon: '💻', action: 'site', site: 'github.com' }
-            ];
-            
-            const suggestionsContainer = document.getElementById('googleSuggestions');
-            suggestionsContainer.innerHTML = '';
-            
-            suggestions.forEach(suggestion => {
-                const suggestionElement = document.createElement('div');
-                suggestionElement.className = 'search-suggestion';
-                suggestionElement.innerHTML = `
-                    <span class="suggestion-icon">${suggestion.icon}</span>
-                    <span class="suggestion-text">${suggestion.text}</span>
-                    <span class="suggestion-type">${suggestion.type}</span>
-                `;
-                
-                suggestionElement.addEventListener('click', function() {
-                    performGoogleSearch(suggestion.text);
-                });
-                
-                suggestionsContainer.appendChild(suggestionElement);
-            });
-            
-            suggestionsContainer.style.display = 'block';
-        }
-
-        function hideGoogleSuggestions() {
-            document.getElementById('googleSuggestions').style.display = 'none';
-        }
-
         // AFD search functions
         function showAFDSuggestions(query) {
             const suggestions = [
@@ -2028,13 +2041,21 @@
             document.getElementById('afdSuggestions').style.display = 'none';
         }
 
-        function performGoogleSearch(query) {
-            const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-            window.open(googleUrl, '_blank');
+        function performAFDSearch(query, action, filter) {
+            const afdUrl = 'https://inpactsolutions.github.io/afd-datacatalogus/';
+            let searchUrl = afdUrl;
             
-            // Clear Google search and hide suggestions
-            document.getElementById('googleSearchInput').value = '';
-            hideGoogleSuggestions();
+            if (action === 'search') {
+                searchUrl += `?search=${encodeURIComponent(query)}`;
+            } else if (action === 'filter' && filter) {
+                searchUrl += `?search=${encodeURIComponent(query)}&filter=${filter}`;
+            }
+            
+            window.open(searchUrl, '_blank');
+            
+            // Clear AFD search and hide suggestions
+            document.getElementById('afdSearchInput').value = '';
+            hideAFDSuggestions();
         }
 
         // Form submissions
@@ -2344,39 +2365,12 @@
                 }
             });
 
-            // Google search
-            document.getElementById('googleSearchInput').addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase().trim();
-                
-                if (googleSearchTimeout) {
-                    clearTimeout(googleSearchTimeout);
-                }
-                
-                if (searchTerm.length > 0) {
-                    googleSearchTimeout = setTimeout(() => {
-                        showGoogleSuggestions(searchTerm);
-                    }, 300);
-                } else {
-                    hideGoogleSuggestions();
-                }
-            });
-
             // Handle Enter key for AFD search
             document.getElementById('afdSearchInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     const searchTerm = e.target.value.trim();
                     if (searchTerm) {
                         performAFDSearch(searchTerm);
-                    }
-                }
-            });
-
-            // Handle Enter key for Google search
-            document.getElementById('googleSearchInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    const searchTerm = e.target.value.trim();
-                    if (searchTerm) {
-                        performGoogleSearch(searchTerm);
                     }
                 }
             });
@@ -2398,9 +2392,6 @@
                 }
                 if (!e.target.closest('#afdSearchInput') && !e.target.closest('#afdSuggestions')) {
                     hideAFDSuggestions();
-                }
-                if (!e.target.closest('#googleSearchInput') && !e.target.closest('#googleSuggestions')) {
-                    hideGoogleSuggestions();
                 }
             });
         }
