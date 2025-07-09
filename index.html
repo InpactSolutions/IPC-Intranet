@@ -1243,6 +1243,7 @@
         }
 
         function activateAdminMode() {
+            console.log('🔐 Activating admin mode...');
             isAdminMode = true;
             const adminBar = document.getElementById('adminBar');
             const adminToggle = document.querySelector('.admin-toggle');
@@ -1251,11 +1252,15 @@
             adminToggle.classList.add('active');
             document.body.classList.add('edit-mode');
             
+            console.log('🎯 Admin mode activated, re-rendering sections...');
             // Re-render to enable dragging
             renderSections();
+            
+            console.log('✅ Admin mode setup complete');
         }
 
         function deactivateAdminMode() {
+            console.log('🔒 Deactivating admin mode...');
             isAdminMode = false;
             const adminBar = document.getElementById('adminBar');
             const adminToggle = document.querySelector('.admin-toggle');
@@ -1269,6 +1274,8 @@
             
             // Re-render to disable dragging
             renderSections();
+            
+            console.log('✅ Admin mode deactivated');
         }
 
         // Modal management
@@ -1434,6 +1441,8 @@
 
         // Rendering
         function renderSections() {
+            console.log('🎨 Rendering sections...', { isAdminMode, sectionsCount: sections.length });
+            
             const grid = document.getElementById('mainGrid');
             grid.innerHTML = '';
             
@@ -1463,7 +1472,14 @@
             });
             
             // Add drag and drop event listeners
-            setupDragAndDrop();
+            if (isAdminMode) {
+                console.log('👆 Admin mode is active, setting up drag and drop...');
+                setupDragAndDrop();
+            } else {
+                console.log('👀 Normal mode - no drag and drop setup');
+            }
+            
+            console.log('✅ Sections rendered');
         }
 
         function addLinkToDOM(link) {
@@ -1941,6 +1957,8 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 DOM Content Loaded - Starting initialization');
+            
             // Try to load from GitHub first, then localStorage, then defaults
             let dataLoaded = false;
             
@@ -1962,6 +1980,8 @@
                 if (!link.tags) link.tags = [];
             });
             
+            console.log('📊 Data loaded:', { sections: sections.length, links: links.length });
+            
             renderSections();
             updateCategoryOptions();
             
@@ -1974,6 +1994,9 @@
             
             // Refresh weather every 30 minutes
             setInterval(loadWeather, 30 * 60 * 1000);
+            
+            // Test drag and drop setup
+            console.log('🔧 Testing admin mode and drag setup...');
             
             // Handle link clicks - prevent drag from triggering navigation
             document.addEventListener('click', function(e) {
@@ -1998,6 +2021,8 @@
                     e.preventDefault();
                 }
             });
+            
+            console.log('✅ Initialization complete');
         });
     </script>
 </body>
