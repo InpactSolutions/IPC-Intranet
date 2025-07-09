@@ -1540,9 +1540,14 @@
                     
                     // Make the drag handle the draggable element, not the link
                     const dragHandle = link.querySelector('.drag-handle');
+                    console.log(`🔍 Drag handle found for link ${index}:`, !!dragHandle);
+                    
                     if (dragHandle) {
                         dragHandle.draggable = true;
                         dragHandle.style.cursor = 'move';
+                        dragHandle.style.backgroundColor = 'rgba(255,255,255,0.2)'; // Visual debug
+                        
+                        console.log(`✅ Drag handle setup complete for link ${index}`);
                         
                         dragHandle.addEventListener('dragstart', function(e) {
                             console.log('🔗 Link drag started via handle!');
@@ -1553,16 +1558,20 @@
                             e.stopPropagation(); // Prevent section drag
                         });
                         
-                        // Prevent link navigation when clicking drag handle
+                        // Test if click events work
                         dragHandle.addEventListener('click', function(e) {
+                            console.log('🔗 Drag handle clicked!');
                             e.preventDefault();
                             e.stopPropagation();
                         });
                         
                         dragHandle.addEventListener('mousedown', function(e) {
+                            console.log('🔗 Drag handle mousedown!');
                             e.preventDefault();
                             e.stopPropagation();
                         });
+                    } else {
+                        console.warn(`❌ No drag handle found for link ${index}`);
                     }
                     
                     link.addEventListener('dragover', function(e) {
