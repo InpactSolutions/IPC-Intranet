@@ -135,6 +135,8 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 12px;
+            position: relative;
+            z-index: 10000;
         }
 
         .search-container {
@@ -160,6 +162,7 @@
 
         .search-input-container {
             position: relative;
+            z-index: 10000;
         }
 
         .search-box {
@@ -209,15 +212,16 @@
             top: 100%;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 12px;
             margin-top: 4px;
             max-height: 300px;
             overflow-y: auto;
-            z-index: 2000;
+            z-index: 9999;
             display: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
         .search-suggestion {
