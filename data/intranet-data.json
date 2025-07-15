@@ -149,7 +149,7 @@
     },
     {
       "id": 15,
-      "title": "Transscript",
+      "title": "Handleiding genereren ",
       "url": "https://chatgpt.com/g/g-6853ba18f4ec81919b75ed778aff8d26-transcript-vertaler-naar-samenvatting-actiepunten",
       "description": "",
       "category": "documentation",
@@ -271,8 +271,16 @@
         "ipc",
         "servicedesk"
       ]
+    },
+    {
+      "id": 27,
+      "title": "AFD labels vergelijken (Analyse, SUIV en XML)",
+      "url": "https://chatgpt.com/g/g-687613c40d10819180a2e6e4c8344264-afd-vergelijker",
+      "description": "",
+      "category": "documentation",
+      "tags": []
     }
   ],
-  "linkIdCounter": 26,
-  "lastUpdated": "2025-07-15T09:10:13.563Z"
+  "linkIdCounter": 28,
+  "lastUpdated": "2025-07-15T09:11:54.731Z"
 }
