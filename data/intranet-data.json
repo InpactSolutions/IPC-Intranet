@@ -324,8 +324,21 @@
       "tags": [
         "DIAS"
       ]
+    },
+    {
+      "id": 31,
+      "title": "Instructies BO IPC",
+      "url": "https://awisoftware.atlassian.net/wiki/spaces/IK1/pages/3563159557/Instructies+backoffice+systemen",
+      "description": "",
+      "category": "Backoffice",
+      "tags": [
+        "ANVA",
+        "CCS",
+        "DIAS",
+        "IPC"
+      ]
     }
   ],
-  "linkIdCounter": 31,
-  "lastUpdated": "2025-07-21T12:40:43.963Z"
+  "linkIdCounter": 32,
+  "lastUpdated": "2025-07-21T12:43:03.257Z"
 }
